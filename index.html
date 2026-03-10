@@ -1364,7 +1364,8 @@
             <button class="btn-suggest-card" id="btn-suggest-card">+ Suggest a card</button>
           </div>
           <div class="suggest-card-form" id="suggest-card-form" style="display:none;">
-            <input type="text" class="card-edit-input" id="suggest-card-input" placeholder="Enter your suggested card title..." />
+            <input type="text" class="card-edit-input" id="suggest-card-input"
+              placeholder="Enter your suggested card title..." />
             <div class="card-edit-actions" style="margin-top:6px;">
               <button class="card-edit-save" id="suggest-card-save">Add card</button>
               <button class="card-edit-cancel" id="suggest-card-cancel">Cancel</button>
@@ -2179,12 +2180,14 @@
             original: card.label,
             label: getCardLabel(card),
             renamed: isRenamed(card),
+            suggested: card.suggested || false,
           })),
         })),
         unsortedCards: unsortedCards.map(c => ({
           original: c.label,
           label: getCardLabel(c),
           renamed: isRenamed(c),
+          suggested: c.suggested || false,
         })),
         renames: Object.entries(cardRenames).map(([id, newLabel]) => {
           const card = ALL_CARDS.find(c => c.id === parseInt(id));
