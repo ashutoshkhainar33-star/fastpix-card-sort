@@ -551,6 +551,31 @@
       border-color: var(--border-hover) !important;
     }
 
+    .suggest-card-row {
+      margin-bottom: 10px;
+    }
+
+    .btn-suggest-card {
+      padding: 6px 12px;
+      background: var(--surface2);
+      color: var(--accent);
+      border: 1px dashed var(--accent);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.15s;
+    }
+
+    .btn-suggest-card:hover {
+      background: var(--accent-glow);
+    }
+
+    .suggest-card-form {
+      margin-bottom: 10px;
+    }
+
     .empty-state {
       padding: 28px;
       text-align: center;
@@ -1315,6 +1340,17 @@
         <div class="unsorted-header">
           <h3>Unsorted cards</h3>
           <p id="unsorted-count">80 remaining — drag to a category</p>
+          <div class="suggest-card-row" id="suggest-card-row">
+            <button class="btn-suggest-card" id="btn-suggest-card">+ Suggest a card</button>
+          </div>
+          <div class="suggest-card-form" id="suggest-card-form" style="display:none;">
+            <input type="text" class="card-edit-input" id="suggest-card-input"
+              placeholder="Enter your suggested card title..." />
+            <div class="card-edit-actions" style="margin-top:6px;">
+              <button class="card-edit-save" id="suggest-card-save">Add card</button>
+              <button class="card-edit-cancel" id="suggest-card-cancel">Cancel</button>
+            </div>
+          </div>
         </div>
         <div class="unsorted-list" id="unsorted-list"></div>
       </div>
@@ -1367,7 +1403,7 @@
     // ================================================================
 
     // 1. Paste your Google Apps Script Web App URL here (see setup guide)
-    const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzHvetvGfrMt1iWvUWZclTMtv_StYVV2RxF6N4Pbu8RAl5i_6xM3PSeQJ7Ny0j45ZNs/exec";
+    const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxuqIx-whVjv-A06FuZqyTmTgcE0n7JPHNv5dg-fmKNbNVGH2houYZEMjSkxv4FFYN_/exec";
 
     // 2. Set your admin password for the #admin dashboard
     const ADMIN_PASSWORD = "Ashu@fp_2025";
@@ -1547,7 +1583,10 @@
         return;
       }
 
-      unsortedCards.forEach(card => {
+      // Show suggested cards at the top
+      const sortedUnsorted = [...unsortedCards].sort((a, b) => (b.suggested ? 1 : 0) - (a.suggested ? 1 : 0));
+
+      sortedUnsorted.forEach(card => {
         const el = document.createElement('div');
         el.className = 'card-item';
         el.draggable = true;
@@ -1563,15 +1602,6 @@
           labelDiv.appendChild(orig);
         }
 
-        const editBtn = document.createElement('button');
-        editBtn.className = 'card-edit-btn';
-        editBtn.innerHTML = '✏️';
-        editBtn.title = 'Rename this card';
-        editBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          startCardEdit(card, el, 'unsorted');
-        });
-
         el.appendChild(labelDiv);
         if (isRenamed(card)) {
           const badge = document.createElement('span');
@@ -1579,7 +1609,14 @@
           badge.textContent = 'renamed';
           el.appendChild(badge);
         }
-        el.appendChild(editBtn);
+        if (card.suggested) {
+          const sugBadge = document.createElement('span');
+          sugBadge.className = 'card-renamed-badge';
+          sugBadge.style.color = 'var(--success)';
+          sugBadge.style.background = 'rgba(56,161,105,0.12)';
+          sugBadge.textContent = 'suggested';
+          el.appendChild(sugBadge);
+        }
 
         el.addEventListener('dragstart', e => {
           draggingCardId = card.id;
@@ -1680,6 +1717,51 @@
       renderCategories();
       updateProgress();
     });
+
+    // ================================================================
+    // SUGGEST A CARD
+    // ================================================================
+    let suggestedCardIdCounter = 1000; // start high to avoid collision with ALL_CARDS ids
+
+    document.getElementById('btn-suggest-card').addEventListener('click', () => {
+      document.getElementById('suggest-card-form').style.display = 'block';
+      document.getElementById('btn-suggest-card').style.display = 'none';
+      document.getElementById('suggest-card-input').focus();
+    });
+
+    document.getElementById('suggest-card-cancel').addEventListener('click', () => {
+      document.getElementById('suggest-card-form').style.display = 'none';
+      document.getElementById('suggest-card-input').value = '';
+      document.getElementById('btn-suggest-card').style.display = 'block';
+    });
+
+    document.getElementById('suggest-card-save').addEventListener('click', addSuggestedCard);
+    document.getElementById('suggest-card-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') addSuggestedCard();
+      if (e.key === 'Escape') {
+        document.getElementById('suggest-card-form').style.display = 'none';
+        document.getElementById('suggest-card-input').value = '';
+        document.getElementById('btn-suggest-card').style.display = 'block';
+      }
+    });
+
+    function addSuggestedCard() {
+      const input = document.getElementById('suggest-card-input');
+      const title = input.value.trim();
+      if (!title) { showToast('Please enter a card title', 'error'); input.focus(); return; }
+
+      const newCard = { id: ++suggestedCardIdCounter, label: title, suggested: true };
+      ALL_CARDS.push(newCard);
+      unsortedCards.push(newCard);
+
+      input.value = '';
+      document.getElementById('suggest-card-form').style.display = 'none';
+      document.getElementById('btn-suggest-card').style.display = 'block';
+
+      renderUnsorted();
+      updateProgress();
+      showToast(`Card "${title}" added!`, 'success');
+    }
 
     // Categories
     document.getElementById('btn-add-cat').addEventListener('click', addCategory);
@@ -1812,6 +1894,15 @@
             btnsDiv.appendChild(badge);
           }
 
+          if (card.suggested) {
+            const sugBadge = document.createElement('span');
+            sugBadge.className = 'card-renamed-badge';
+            sugBadge.style.color = 'var(--success)';
+            sugBadge.style.background = 'rgba(56,161,105,0.12)';
+            sugBadge.textContent = 'suggested';
+            btnsDiv.appendChild(sugBadge);
+          }
+
           const editBtn = document.createElement('button');
           editBtn.className = 'card-edit-btn';
           editBtn.innerHTML = '✏️';
@@ -1906,7 +1997,7 @@
 
       actions.appendChild(saveBtn);
       actions.appendChild(cancelBtn);
-      if (isRenamed(card)) actions.appendChild(resetBtn);
+      actions.appendChild(resetBtn);
 
       wrap.appendChild(input);
       wrap.appendChild(actions);
