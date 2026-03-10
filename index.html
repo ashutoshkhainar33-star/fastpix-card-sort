@@ -777,8 +777,28 @@
       border-color: var(--border-hover);
     }
 
+    .cat-card-item.drop-above {
+      border-top: 2px solid var(--accent);
+      margin-top: -1px;
+    }
+
+    .cat-card-item.drop-below {
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: -1px;
+    }
+
     .cat-card-item.dragging {
       opacity: 0.35;
+    }
+
+    .cat-card-item.drop-above {
+      border-top: 2px solid var(--accent);
+      margin-top: -1px;
+    }
+
+    .cat-card-item.drop-below {
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: -1px;
     }
 
     .cat-card-item .card-label {
@@ -1344,8 +1364,7 @@
             <button class="btn-suggest-card" id="btn-suggest-card">+ Suggest a card</button>
           </div>
           <div class="suggest-card-form" id="suggest-card-form" style="display:none;">
-            <input type="text" class="card-edit-input" id="suggest-card-input"
-              placeholder="Enter your suggested card title..." />
+            <input type="text" class="card-edit-input" id="suggest-card-input" placeholder="Enter your suggested card title..." />
             <div class="card-edit-actions" style="margin-top:6px;">
               <button class="card-edit-save" id="suggest-card-save">Add card</button>
               <button class="card-edit-cancel" id="suggest-card-cancel">Cancel</button>
@@ -1403,7 +1422,7 @@
     // ================================================================
 
     // 1. Paste your Google Apps Script Web App URL here (see setup guide)
-    const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxuqIx-whVjv-A06FuZqyTmTgcE0n7JPHNv5dg-fmKNbNVGH2houYZEMjSkxv4FFYN_/exec";
+    const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyA0UImSbqRqNFoaNAANIswR4dP3Paozp9aNut1dJjnnyyEA-tB1_tfaKzre4cE3AFE/exec";
 
     // 2. Set your admin password for the #admin dashboard
     const ADMIN_PASSWORD = "Ashu@fp_2025";
@@ -1507,6 +1526,19 @@
 
     // Track card renames: cardId → custom label (only if renamed)
     let cardRenames = {}; // e.g. { 14: "Direct video upload" }
+
+    // Restore a card to its original position in unsortedCards (ignoring suggested cards which always go to top)
+    function restoreToUnsorted(card) {
+      if (unsortedCards.find(c => c.id === card.id)) return;
+      if (card.suggested) { unsortedCards.unshift(card); return; }
+      const originalIndex = ALL_CARDS.findIndex(c => c.id === card.id);
+      let insertAt = unsortedCards.findIndex(c => {
+        if (c.suggested) return false;
+        return ALL_CARDS.findIndex(ac => ac.id === c.id) > originalIndex;
+      });
+      if (insertAt === -1) unsortedCards.push(card);
+      else unsortedCards.splice(insertAt, 0, card);
+    }
 
     function getCardLabel(card) {
       return cardRenames[card.id] || card.label;
@@ -1710,7 +1742,7 @@
       if (!card) return;
       const cat = categories.find(c => c.id === draggingFromCat);
       if (cat) cat.cards = cat.cards.filter(c => c.id !== draggingCardId);
-      if (!unsortedCards.find(c => c.id === draggingCardId)) unsortedCards.push(card);
+      restoreToUnsorted(card);
       draggingCardId = null;
       draggingFromCat = null;
       renderUnsorted();
@@ -1799,22 +1831,62 @@
         bucket.className = 'category-bucket';
         bucket.dataset.catId = cat.id;
 
-        bucket.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; bucket.classList.add('drag-over'); });
+        bucket.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          bucket.classList.add('drag-over');
+          // Highlight drop position among existing cards
+          const cards = [...bucket.querySelectorAll('.cat-card-item:not(.dragging)')];
+          cards.forEach(c => c.classList.remove('drop-above', 'drop-below'));
+          if (cards.length > 0) {
+            const target = cards.find(c => {
+              const rect = c.getBoundingClientRect();
+              return e.clientY < rect.top + rect.height / 2;
+            });
+            if (target) target.classList.add('drop-above');
+            else cards[cards.length - 1].classList.add('drop-below');
+          }
+        });
         bucket.addEventListener('dragleave', e => {
-          if (!bucket.contains(e.relatedTarget)) bucket.classList.remove('drag-over');
+          if (!bucket.contains(e.relatedTarget)) {
+            bucket.classList.remove('drag-over');
+            bucket.querySelectorAll('.cat-card-item').forEach(c => c.classList.remove('drop-above', 'drop-below'));
+          }
         });
         bucket.addEventListener('drop', e => {
           e.preventDefault();
           bucket.classList.remove('drag-over');
+          bucket.querySelectorAll('.cat-card-item').forEach(c => c.classList.remove('drop-above', 'drop-below'));
           if (!draggingCardId) return;
-          const card = ALL_CARDS.find(c => c.id === draggingCardId);
+          const card = ALL_CARDS.find(c => c.id === draggingCardId)
+            || categories.flatMap(c => c.cards).find(c => c.id === draggingCardId);
           if (!card) return;
+
+          // Remove from source
           unsortedCards = unsortedCards.filter(c => c.id !== draggingCardId);
           if (draggingFromCat) {
             const prev = categories.find(c => c.id === draggingFromCat);
             if (prev) prev.cards = prev.cards.filter(c => c.id !== draggingCardId);
           }
-          if (!cat.cards.find(c => c.id === draggingCardId)) cat.cards.push(card);
+
+          // Find insert position using card elements that are NOT the dragging card
+          const cardEls = [...bucket.querySelectorAll('.cat-card-item')].filter(
+            c => parseInt(c.dataset.cardId) !== draggingCardId
+          );
+          const targetEl = cardEls.find(c => {
+            const rect = c.getBoundingClientRect();
+            return e.clientY < rect.top + rect.height / 2;
+          });
+
+          if (targetEl) {
+            const targetId = parseInt(targetEl.dataset.cardId);
+            const targetIdx = cat.cards.findIndex(c => c.id === targetId);
+            if (targetIdx !== -1) cat.cards.splice(targetIdx, 0, card);
+            else cat.cards.push(card);
+          } else {
+            if (!cat.cards.find(c => c.id === draggingCardId)) cat.cards.push(card);
+          }
+
           draggingCardId = null;
           draggingFromCat = null;
           renderUnsorted();
@@ -1851,7 +1923,7 @@
         delBtn.innerHTML = '×';
         delBtn.title = 'Delete category';
         delBtn.addEventListener('click', () => {
-          cat.cards.forEach(c => { if (!unsortedCards.find(u => u.id === c.id)) unsortedCards.push(c); });
+          cat.cards.forEach(c => { restoreToUnsorted(c); });
           categories = categories.filter(c => c.id !== cat.id);
           renderUnsorted();
           renderCategories();
@@ -1873,7 +1945,7 @@
           const el = document.createElement('div');
           el.className = 'cat-card-item';
           el.draggable = true;
-
+          el.dataset.cardId = card.id;
           const labelDiv = document.createElement('div');
           labelDiv.className = 'card-label';
           labelDiv.textContent = getCardLabel(card);
@@ -1918,7 +1990,7 @@
           removeBtn.innerHTML = '×';
           removeBtn.addEventListener('click', () => {
             cat.cards = cat.cards.filter(c => c.id !== card.id);
-            if (!unsortedCards.find(u => u.id === card.id)) unsortedCards.push(card);
+            restoreToUnsorted(card);
             renderUnsorted();
             renderCategories();
             updateProgress();
