@@ -204,13 +204,22 @@ textarea.fb-area:focus{border-color:var(--fp)}
 </div>
 
 <div id="done" class="screen">
-<div class="done-w"><div class="done-ico">✓</div><h1 class="done-h">Thank you!</h1><p class="done-p">Your card sort has been submitted. Your input will directly shape how we reorganize FastPix documentation.</p></div>
+<div style="max-width:800px;margin:0 auto;width:100%;padding:24px">
+  <div style="text-align:center;margin-bottom:24px">
+    <div class="done-ico" style="margin:0 auto 16px">✓</div>
+    <h1 class="done-h">Thank you!</h1>
+    <p class="done-p" style="margin-bottom:20px">Your card sort has been submitted. Here's a visual summary of your sort — download it to share with the team.</p>
+    <button class="btn btn-fp" id="btn-download" style="padding:12px 28px;font-size:14px">⬇ Download as image</button>
+  </div>
+  <canvas id="summary-canvas" style="display:none"></canvas>
+  <div id="summary-preview" style="border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;margin-top:20px"></div>
+</div>
 </div>
 
 <div id="admin" class="screen"><div class="admin-w" id="admin-content"></div></div>
 
 <script>
-const WEBHOOK="https://script.google.com/macros/s/AKfycbwSOSS-DPT9IdzXZuGfbP_Ih6W1PeFIXgWN7gZza_1wJe7tzzhPB2KBF12MeuH72reM/exec";
+const WEBHOOK="https://script.google.com/macros/s/AKfycbw5PTBQvYmcAN9OX3HUt9C2AfYNy0krKNvth6vr5oyEQt_YBzrl71iXufsenqrGT-1b/exec";
 const ADMIN_PW="Ashu@fp_2025";
 const SK="fp_closed_sort_v3";
 
@@ -542,9 +551,160 @@ async function submitSort(){
   try{const x=JSON.parse(localStorage.getItem(SK)||'[]');x.push(payload);localStorage.setItem(SK,JSON.stringify(x))}catch(e){}
   if(WEBHOOK&&WEBHOOK!=="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"){try{await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}}
   show('done');
+  generateSummaryImage();
 }
 
 window.addEventListener('hashchange',()=>{if(location.hash==='#admin'){show('admin');renderAdmin()}else if(!location.hash||location.hash==='#')show('intro')});
+
+// ════════════════════════════════════════════════════════
+// IMAGE GENERATION
+// ════════════════════════════════════════════════════════
+function generateSummaryImage(){
+  const canvas=document.getElementById('summary-canvas');
+  const ctx=canvas.getContext('2d');
+
+  // Layout constants
+  const W=1200;
+  const PAD=40;
+  const COL_W=W-PAD*2;
+  const HEADER_H=120;
+  const PARENT_TITLE_H=44;
+  const SUB_TITLE_H=28;
+  const CARD_H=22;
+  const CARD_GAP=4;
+  const SUB_PAD_TOP=8;
+  const SUB_PAD_BOT=12;
+  const PARENT_GAP=24;
+  const SUB_GAP=8;
+  const FOOTER_H=80;
+
+  // Pre-calculate total height
+  let totalH=HEADER_H;
+  STRUCTURE.forEach(parent=>{
+    totalH+=PARENT_TITLE_H;
+    parent.subs.forEach(sub=>{
+      const cards=buckets[sub.id];
+      totalH+=SUB_TITLE_H+SUB_PAD_TOP+SUB_PAD_BOT+Math.max(cards.length,0)*(CARD_H+CARD_GAP);
+      if(!cards.length)totalH+=CARD_H;
+      totalH+=SUB_GAP;
+    });
+    totalH+=PARENT_GAP;
+  });
+  if(unsorted.length){
+    totalH+=PARENT_TITLE_H+SUB_TITLE_H+SUB_PAD_TOP+SUB_PAD_BOT+unsorted.length*(CARD_H+CARD_GAP)+PARENT_GAP;
+  }
+  totalH+=FOOTER_H;
+
+  canvas.width=W;
+  canvas.height=totalH;
+
+  // Background
+  ctx.fillStyle='#09090b';
+  ctx.fillRect(0,0,W,totalH);
+
+  // Helper functions
+  function text(str,x,y,font,color,maxW){
+    ctx.fillStyle=color;ctx.font=font;
+    if(maxW)ctx.fillText(str,x,y,maxW);
+    else ctx.fillText(str,x,y);
+  }
+  function roundRect(x,y,w,h,r,fill,stroke){
+    ctx.beginPath();ctx.roundRect(x,y,w,h,r);
+    if(fill){ctx.fillStyle=fill;ctx.fill()}
+    if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}
+  }
+
+  let Y=0;
+
+  // ── Header ──
+  roundRect(0,0,W,HEADER_H,0,'#0f0f13');
+  // Logo
+  roundRect(PAD,28,32,32,6,'#E84E1B');
+  text('FP',PAD+8,50,'bold 13px DM Sans','#fff');
+  text('FastPix Docs — Card Sort Results',PAD+44,46,'bold 18px DM Sans','#fafafa');
+  text(email+' · '+new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}),PAD+44,68,'400 12px JetBrains Mono','#a1a1aa');
+
+  // Stats bar
+  const sorted=CARDS.length-unsorted.length;
+  const pct=Math.round(sorted/CARDS.length*100);
+  const notSure=buckets['unsure.bucket']?buckets['unsure.bucket'].length:0;
+  const statsText=`${sorted}/${CARDS.length} sorted (${pct}%) · Confidence: ${confidence||'—'}/5 · Not sure: ${notSure}`;
+  text(statsText,PAD,100,'500 11px JetBrains Mono','#52525b');
+
+  Y=HEADER_H;
+
+  // ── Categories ──
+  STRUCTURE.forEach(parent=>{
+    const parentCards=[];parent.subs.forEach(s=>parentCards.push(...buckets[s.id]));
+
+    // Parent header
+    roundRect(PAD,Y+4,COL_W,PARENT_TITLE_H-8,8,'#111113','#27272a');
+    text(`${parent.icon} ${parent.name}`,PAD+14,Y+28,'bold 15px DM Sans','#fafafa');
+    text(`${parentCards.length} cards`,W-PAD-80,Y+28,'400 11px JetBrains Mono','#52525b');
+    Y+=PARENT_TITLE_H;
+
+    parent.subs.forEach(sub=>{
+      const cards=buckets[sub.id];
+      const subH=SUB_TITLE_H+SUB_PAD_TOP+SUB_PAD_BOT+Math.max(cards.length,1)*(CARD_H+CARD_GAP);
+
+      // Sub background
+      const subBg=sub.isUnsure?'#1a1a0f':'#0f0f13';
+      const subBorder=sub.isUnsure?'#eab308':'#27272a';
+      roundRect(PAD+12,Y,COL_W-24,subH,6,subBg,subBorder);
+
+      // Sub title
+      const nameColor=sub.isUnsure?'#eab308':'#E84E1B';
+      text(sub.name,PAD+24,Y+20,'600 12px DM Sans',nameColor);
+      text(`${cards.length}`,W-PAD-50,Y+20,'400 10px JetBrains Mono','#52525b');
+      Y+=SUB_TITLE_H+SUB_PAD_TOP;
+
+      if(!cards.length){
+        text('(empty)',PAD+24,Y+14,'italic 11px JetBrains Mono','#3f3f46');
+        Y+=CARD_H+CARD_GAP;
+      } else {
+        cards.forEach(card=>{
+          roundRect(PAD+24,Y,COL_W-48,CARD_H-2,4,'#19191d','#27272a');
+          text(card.label,PAD+32,Y+15,'400 11px JetBrains Mono','#a1a1aa',COL_W-80);
+          Y+=CARD_H+CARD_GAP;
+        });
+      }
+      Y+=SUB_PAD_BOT+SUB_GAP;
+    });
+    Y+=PARENT_GAP;
+  });
+
+  // Unsorted cards (if any left)
+  if(unsorted.length){
+    roundRect(PAD,Y+4,COL_W,PARENT_TITLE_H-8,8,'#111113','#27272a');
+    text(`⚠️ Still Unsorted`,PAD+14,Y+28,'bold 15px DM Sans','#ef4444');
+    text(`${unsorted.length} cards`,W-PAD-80,Y+28,'400 11px JetBrains Mono','#52525b');
+    Y+=PARENT_TITLE_H+SUB_PAD_TOP;
+    unsorted.forEach(card=>{
+      roundRect(PAD+24,Y,COL_W-48,CARD_H-2,4,'#19191d','#3f3f46');
+      text(card.label,PAD+32,Y+15,'400 11px JetBrains Mono','#71717a',COL_W-80);
+      Y+=CARD_H+CARD_GAP;
+    });
+  }
+
+  // ── Footer ──
+  Y=totalH-FOOTER_H+20;
+  text('Generated by FastPix Docs IA Research · '+new Date().toISOString().slice(0,10),PAD,Y+20,'400 10px JetBrains Mono','#3f3f46');
+
+  // Show preview
+  const dataUrl=canvas.toDataURL('image/png');
+  const preview=document.getElementById('summary-preview');
+  preview.innerHTML=`<img src="${dataUrl}" style="width:100%;display:block" alt="Card sort summary"/>`;
+
+  // Wire download button
+  document.getElementById('btn-download').onclick=()=>{
+    const a=document.createElement('a');
+    a.href=dataUrl;
+    a.download=`fastpix-cardsort-${email.replace(/[^a-zA-Z0-9]/g,'_')}-${Date.now()}.png`;
+    a.click();
+    toast('Image downloaded','ok');
+  };
+}
+
 if(location.hash==='#admin'){show('admin');renderAdmin()}
 function renderAdmin(){
   const w=document.getElementById('admin-content');
