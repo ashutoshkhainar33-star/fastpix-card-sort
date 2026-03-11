@@ -15,7 +15,7 @@
   --bg:#09090b;--s1:#111113;--s2:#19191d;--s3:#222228;
   --b1:#27272a;--b2:#3f3f46;
   --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
-  --ok:#22c55e;--err:#ef4444;
+  --ok:#22c55e;--err:#ef4444;--warn:#eab308;
   --font:'DM Sans',system-ui,sans-serif;
   --mono:'JetBrains Mono',monospace;
   --r1:6px;--r2:10px;--r3:14px;
@@ -31,7 +31,6 @@ body{background:var(--bg);color:var(--t1);font-family:var(--font);line-height:1.
 .btn-ghost{background:transparent;border:1px solid var(--b1);color:var(--t2)}.btn-ghost:hover{border-color:var(--fp);color:var(--fp)}
 .field{padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);color:var(--t1);font:400 13.5px var(--mono);outline:none;transition:border .15s}.field:focus{border-color:var(--fp)}.field.err{border-color:var(--err)}
 
-/* ── Intro ── */
 #intro{min-height:100vh;align-items:center;justify-content:center;padding:32px 20px}
 .intro-w{max-width:600px;width:100%}
 .logo-row{display:flex;align-items:center;gap:10px;margin-bottom:36px}
@@ -40,14 +39,13 @@ body{background:var(--bg);color:var(--t1);font-family:var(--font);line-height:1.
 h1{font-size:clamp(26px,4.5vw,38px);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
 h1 em{font-style:normal;color:var(--fp)}
 .intro-p{color:var(--t2);font-size:15px;line-height:1.75;margin-bottom:32px}.intro-p strong{color:var(--t1);font-weight:600}
-.card-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);padding:24px;margin-bottom:20px}
-.card-box h3{font-size:15px;font-weight:600;margin-bottom:12px}
+.box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);padding:24px;margin-bottom:20px}
+.box h3{font-size:15px;font-weight:600;margin-bottom:12px}
 .step{color:var(--t2);font-size:13.5px;line-height:1.75;margin:7px 0}.step b{color:var(--fp);margin-right:2px}
 .email-row{display:flex;gap:10px}
 .field-err{color:var(--err);font:400 11px var(--mono);margin-top:6px;display:none}
 .hint{color:var(--t3);font:400 11px var(--mono);margin-top:10px}
 
-/* ── Sort screen ── */
 #sort{flex-direction:column;min-height:100vh}
 .topbar{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--b1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .tb-left{display:flex;align-items:center;gap:10px}
@@ -59,7 +57,6 @@ h1 em{font-style:normal;color:var(--fp)}
 .progress-pct{font:500 11px var(--mono);color:var(--t3);min-width:32px;text-align:right}
 .sort-layout{display:flex;flex:1;overflow:hidden}
 
-/* Left panel */
 .unsorted-panel{width:320px;min-width:280px;border-right:1px solid var(--b1);display:flex;flex-direction:column;background:var(--bg)}
 .unsorted-head{padding:16px 18px;border-bottom:1px solid var(--b1)}
 .unsorted-head h3{font:600 13px var(--font);margin-bottom:2px}
@@ -69,22 +66,19 @@ h1 em{font-style:normal;color:var(--fp)}
 .card:hover{border-color:var(--fp);transform:translateY(-1px);box-shadow:0 2px 8px rgba(232,78,27,.08)}
 .card.dragging{opacity:.3;border-color:var(--fp)}
 .card .grip{color:var(--t3);font-size:10px;flex-shrink:0}
-.card .label{flex:1;min-width:0}
 .empty-msg{padding:20px;text-align:center;color:var(--t3);font:400 12px var(--mono);border:1.5px dashed var(--b1);border-radius:var(--r2)}
 
-/* Right panel — categories with subsections */
 .cats-panel{flex:1;overflow-y:auto;padding:20px}
-
 .parent-group{margin-bottom:20px}
 .parent-head{display:flex;align-items:center;gap:8px;padding:10px 0 8px;border-bottom:1px solid var(--b1);margin-bottom:10px}
 .parent-icon{font-size:18px}
 .parent-name{font:700 16px var(--font);color:var(--t1);letter-spacing:-.01em}
 .parent-count{font:400 10px var(--mono);color:var(--t3);margin-left:auto}
-
 .sub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-
 .sub-bucket{background:var(--s1);border:1.5px solid var(--b1);border-radius:var(--r2);min-height:80px;display:flex;flex-direction:column;transition:.2s}
 .sub-bucket.drag-over{border-color:var(--fp);background:rgba(232,78,27,.03);box-shadow:0 0 0 1px var(--fp)}
+.sub-bucket.unsure-bucket{border-style:dashed;border-color:var(--warn)}
+.sub-bucket.unsure-bucket .sub-name{color:var(--warn)}
 .sub-head{padding:10px 12px 6px;display:flex;align-items:center;justify-content:space-between}
 .sub-name{font:600 12.5px var(--font);color:var(--fp)}
 .sub-count{font:400 10px var(--mono);color:var(--t3)}
@@ -95,7 +89,6 @@ h1 em{font-style:normal;color:var(--fp)}
 .sub-card .remove:hover{color:var(--err);background:rgba(239,68,68,.1)}
 .sub-drop{padding:10px;text-align:center;color:var(--t3);font:400 10px var(--mono);border:1.5px dashed var(--b1);border-radius:var(--r1);margin:4px 8px 8px}
 
-/* ── Review ── */
 #review{flex-direction:column;min-height:100vh;padding:24px}
 .review-w{max-width:760px;margin:0 auto;width:100%}
 .review-parent{margin-bottom:18px}
@@ -118,13 +111,11 @@ textarea.fb-area:focus{border-color:var(--fp)}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Done ── */
 #done{min-height:100vh;align-items:center;justify-content:center;padding:24px}
 .done-w{text-align:center;max-width:460px}
 .done-ico{width:64px;height:64px;border-radius:50%;background:var(--fp);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;color:#fff;box-shadow:0 0 40px rgba(232,78,27,.25)}
 .done-h{font-size:30px;font-weight:700;margin-bottom:10px}.done-p{color:var(--t2);font-size:15px;line-height:1.7}
 
-/* ── Admin ── */
 #admin{flex-direction:column;min-height:100vh;padding:24px}
 .admin-w{max-width:900px;margin:0 auto;width:100%}
 .admin-login{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);padding:32px;max-width:360px;margin:80px auto}
@@ -133,54 +124,47 @@ textarea.fb-area:focus{border-color:var(--fp)}
 .stat-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:14px 18px;flex:1;min-width:110px}
 .stat-v{font:700 24px var(--font);color:var(--fp)}.stat-l{font:400 10px var(--mono);color:var(--t2);margin-top:3px}
 .sub-card-admin{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:16px;margin-bottom:10px}
-.sub-head-admin{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
-.sub-email{font:600 13px var(--font);color:var(--fp)}.sub-time{font:400 11px var(--mono);color:var(--t3)}
-.sub-detail{font:400 11px var(--mono);color:var(--t2);margin-bottom:2px}
-.sub-fb{margin-top:6px;padding:8px 12px;background:var(--s2);border-radius:var(--r2);font:400 11px var(--mono);color:var(--t2);border-left:3px solid var(--fp)}
 
 @media(max-width:768px){
   .sort-layout{flex-direction:column}
   .unsorted-panel{width:100%;min-width:100%;border-right:none;border-bottom:1px solid var(--b1);max-height:36vh}
   .sub-grid{grid-template-columns:1fr}
   .email-row{flex-direction:column}
-  .topbar{padding:8px 14px}
-  .progress-track{width:80px}
 }
 </style>
 </head>
 <body>
 <div id="toast"></div>
 
-<!-- ═══ INTRO ═══ -->
 <div id="intro" class="screen active">
 <div class="intro-w">
   <div class="logo-row"><div class="logo-box">FP</div><span class="logo-label">FastPix · Docs IA Research</span></div>
   <h1>Help us test our <em>documentation structure.</em></h1>
   <p class="intro-p">
-    This is a <strong>closed card sorting exercise</strong>. You'll see guide titles from FastPix docs on the left.
-    On the right are our <strong>product categories with subsections</strong> — exactly like a docs sidebar.
-    Drag each guide into the specific subsection where you'd naturally look for it.
+    This is a <strong>closed card sorting exercise</strong>. You'll see guide titles on the left and
+    <strong>product categories with subsections</strong> on the right. Drag each guide into the subsection
+    where you'd naturally look for it. If a card doesn't fit anywhere, drop it in <strong>"Not sure where this belongs"</strong>.
   </p>
-  <div class="card-box">
+  <div class="box">
     <h3>How it works</h3>
-    <p class="step"><b>1.</b> ~70 guide titles appear as draggable cards on the left (shuffled randomly).</p>
-    <p class="step"><b>2.</b> On the right are categories like "Video on Demand" with subsections like "Input & Playback", "Secure your playback", etc.</p>
-    <p class="step"><b>3.</b> Drag each card into the specific subsection where you'd expect to find it.</p>
-    <p class="step"><b>4.</b> Review, rate your confidence, and tell us which cards were hard to place. Takes ~10 min.</p>
+    <p class="step"><b>1.</b> ~100 guide titles appear as draggable cards (shuffled randomly).</p>
+    <p class="step"><b>2.</b> On the right are categories with subsections — like a docs sidebar.</p>
+    <p class="step"><b>3.</b> Drag each card into the subsection where you'd expect to find it.</p>
+    <p class="step"><b>4.</b> Cards you can't place go in the yellow "Not sure" bucket at the bottom.</p>
+    <p class="step"><b>5.</b> Review, rate confidence, tell us what was hard. Takes ~10 min.</p>
   </div>
-  <div class="card-box">
+  <div class="box">
     <label style="font:600 13px var(--font);display:block;margin-bottom:8px">Enter your email to begin</label>
     <div class="email-row">
       <input type="email" id="email" class="field" style="flex:1" placeholder="you@company.com" autocomplete="email"/>
       <button class="btn btn-fp" id="btn-start">Start sorting →</button>
     </div>
     <p class="field-err" id="email-err">Please enter a valid email.</p>
-    <p class="hint">We'll only use this to follow up on your input if needed.</p>
+    <p class="hint">We'll only use this to follow up if needed.</p>
   </div>
 </div>
 </div>
 
-<!-- ═══ SORT ═══ -->
 <div id="sort" class="screen">
 <div class="topbar">
   <div class="tb-left"><div class="tb-ico">FP</div><div><div class="tb-title">Closed Card Sort</div><div class="tb-sub" id="tb-stats">0 / 0 sorted</div></div></div>
@@ -198,14 +182,13 @@ textarea.fb-area:focus{border-color:var(--fp)}
 </div>
 </div>
 
-<!-- ═══ REVIEW ═══ -->
 <div id="review" class="screen">
 <div class="review-w">
   <button class="btn btn-ghost" id="btn-back" style="margin-bottom:20px">← Back to sorting</button>
   <h2 style="font-size:24px;font-weight:700;margin-bottom:6px">Review your sort</h2>
   <p style="font:400 13px var(--mono);color:var(--t2);margin-bottom:24px" id="review-stats"></p>
   <div id="review-cats"></div>
-  <div class="card-box" style="margin-top:20px">
+  <div class="box" style="margin-top:20px">
     <div class="fb-group">
       <label class="fb-label">How confident are you in your placements?</label>
       <div class="conf-row" id="conf-row"></div>
@@ -213,80 +196,85 @@ textarea.fb-area:focus{border-color:var(--fp)}
     <div class="fb-group">
       <label class="fb-label">Which cards were hard to place and why? <span style="font-weight:400;color:var(--t3)">(optional)</span></label>
       <p class="fb-sub">This is the most valuable part — tell us where you hesitated.</p>
-      <textarea class="fb-area" id="feedback" placeholder="e.g. 'Auto-generate subtitles' could go in Transforms or AI — I wasn't sure which…"></textarea>
+      <textarea class="fb-area" id="feedback" placeholder="e.g. 'Enable DRM protection' could be in Security or VOD Transforms — wasn't clear…"></textarea>
     </div>
   </div>
   <button class="btn btn-fp" id="btn-submit" style="width:100%;margin-top:16px;padding:14px;font-size:15px">Submit my card sort</button>
 </div>
 </div>
 
-<!-- ═══ DONE ═══ -->
 <div id="done" class="screen">
-<div class="done-w">
-  <div class="done-ico">✓</div>
-  <h1 class="done-h">Thank you!</h1>
-  <p class="done-p">Your card sort has been submitted. Your input will directly shape how we reorganize FastPix documentation.</p>
-</div>
+<div class="done-w"><div class="done-ico">✓</div><h1 class="done-h">Thank you!</h1><p class="done-p">Your card sort has been submitted. Your input will directly shape how we reorganize FastPix documentation.</p></div>
 </div>
 
-<!-- ═══ ADMIN ═══ -->
 <div id="admin" class="screen"><div class="admin-w" id="admin-content"></div></div>
 
 <script>
-// ════════════════════════════════════════════════════════
-// CONFIG
-// ════════════════════════════════════════════════════════
-const WEBHOOK = "https://script.google.com/macros/s/AKfycbxrhwWDPV8qWId_dnFsdj3Mp9K8ah3lHQS8PzCinia8K4upLyD0Bke3kkvE8NwqNYGn/exec";
-const ADMIN_PW = "Ashu@fp_2025";
-const SK = "fp_closed_sort_v2";
+const WEBHOOK="https://script.google.com/macros/s/AKfycbwLHqk3JpLGGg86TwurmMPdLbRYuhIiEpF9RBA8M92B4Od4yIHNteDDZTdbyAP79dMl/exec";
+const ADMIN_PW="Ashu@fp_2025";
+const SK="fp_closed_sort_v3";
 
-// ════════════════════════════════════════════════════════
-// CATEGORIES → SUBSECTIONS (the closed sort buckets)
-// Each subsection is a drop target. Parent is just a visual grouper.
-// ════════════════════════════════════════════════════════
+/*
+ STRUCTURE DESIGN NOTES:
+ - Every card maps to exactly one obvious subsection
+ - "Upload SDK for Android/iOS" → VOD > Upload & Process (they're upload-specific SDKs)
+ - "Integrate video data with player" → Video Player > Player Setup & Integrations (it's a player guide)
+ - "Playback DRM content" / "Secure video playback (signed URLs)" → Video Player > Secure Playback in Player (player-side security)
+ - "Enable DRM protection" / "Generate JWTs" → Security > DRM / Security > JWT (server-side security)
+ - "Add auto-generated subtitles" → VOD > AI-Powered Features (it's applied to VOD assets)
+ - "Enable live captions" → Live Streaming > Live Enhancements (it's a live-specific feature)
+ - "Troubleshoot playback errors" → Video Data > Debugging & Error Tracking
+ - Webhook/event guides stay in Getting Started > Webhooks (they're cross-product platform config)
+ - "Not sure" bucket catches genuinely ambiguous cards
+*/
+
 const STRUCTURE = [
   { id:"platform", icon:"🚀", name:"Getting Started & Platform", subs:[
-    { id:"platform.setup", name:"Account & Setup" },
-    { id:"platform.webhooks", name:"Webhooks & Events" },
+    { id:"platform.setup", name:"Account & Workspace Setup" },
+    { id:"platform.webhooks", name:"Webhooks & Event Types" },
     { id:"platform.sdks", name:"Language SDKs" },
   ]},
   { id:"vod", icon:"🎬", name:"Video on Demand", subs:[
-    { id:"vod.upload", name:"Upload & Process" },
-    { id:"vod.play", name:"Play & Deliver" },
-    { id:"vod.edit", name:"Edit & Transform" },
-    { id:"vod.ai", name:"AI Features" },
-    { id:"vod.secure", name:"Secure Your Content" },
+    { id:"vod.upload", name:"Upload & Process Videos" },
+    { id:"vod.play", name:"Play & Deliver Videos" },
+    { id:"vod.edit", name:"Edit & Transform Videos" },
+    { id:"vod.ai", name:"AI-Powered Features" },
   ]},
   { id:"live", icon:"📡", name:"Live Streaming", subs:[
     { id:"live.go", name:"Go Live (Protocols & Encoders)" },
-    { id:"live.manage", name:"Stream Management" },
-    { id:"live.enhance", name:"Live Enhancements" },
+    { id:"live.manage", name:"Stream Management & Health" },
+    { id:"live.enhance", name:"Live Enhancements (Captions, Clips, DVR)" },
+  ]},
+  { id:"security", icon:"🔐", name:"Security & Access Control", subs:[
+    { id:"security.jwt", name:"JWT Signed Access" },
+    { id:"security.drm", name:"DRM Content Protection" },
+  ]},
+  { id:"player", icon:"▶️", name:"Video Player", subs:[
+    { id:"player.setup", name:"Player Setup & Integrations" },
+    { id:"player.look", name:"Customize Look & Feel" },
+    { id:"player.behavior", name:"Customize Playback Behavior" },
+    { id:"player.secure", name:"Secure Playback in Player" },
+    { id:"player.features", name:"Player Features (Chromecast, Shoppable, Shortcuts)" },
+    { id:"player.mobile", name:"Mobile & Cross-Platform Players" },
   ]},
   { id:"data", icon:"📊", name:"Video Data & Analytics", subs:[
     { id:"data.sdks", name:"Install Monitoring SDKs" },
     { id:"data.metrics", name:"Understand Metrics" },
     { id:"data.dash", name:"Dashboard & Custom Workflows" },
-  ]},
-  { id:"player", icon:"▶️", name:"Video Player", subs:[
-    { id:"player.install", name:"Install & Play" },
-    { id:"player.look", name:"Customize Look & Feel" },
-    { id:"player.behavior", name:"Customize Playback Behavior" },
-    { id:"player.secure", name:"DRM & Security" },
-    { id:"player.mobile", name:"Mobile & Cross-Platform" },
+    { id:"data.debug", name:"Debugging & Error Tracking" },
   ]},
   { id:"playout", icon:"☁️", name:"Cloud Playout", subs:[
     { id:"playout.setup", name:"Import & Organize Content" },
     { id:"playout.channels", name:"Program & Manage Channels" },
   ]},
+  { id:"unsure", icon:"❓", name:"Not Sure Where This Belongs", subs:[
+    { id:"unsure.bucket", name:"Cards that don't fit anywhere above", isUnsure:true },
+  ]},
 ];
 
-// Build a flat list of all subsection IDs for state management
-const ALL_SUBS = [];
-STRUCTURE.forEach(p => p.subs.forEach(s => ALL_SUBS.push(s.id)));
+const ALL_SUBS=[];
+STRUCTURE.forEach(p=>p.subs.forEach(s=>ALL_SUBS.push(s.id)));
 
-// ════════════════════════════════════════════════════════
-// CARDS (guide pages from docs.fastpix.io)
-// ════════════════════════════════════════════════════════
 const CARDS = [
   {id:1, label:"Activate your FastPix account"},
   {id:2, label:"Set up workspace"},
@@ -300,21 +288,21 @@ const CARDS = [
   {id:10, label:"PHP SDK"},
   {id:11, label:"Python SDK"},
   {id:12, label:"Go SDK"},
-  {id:13, label:"Upload videos directly"},
-  {id:14, label:"Upload videos from URL"},
-  {id:15, label:"Upload 4K videos"},
-  {id:16, label:"Optimize for faster processing"},
-  {id:17, label:"Resumable uploads SDK for Web"},
-  {id:18, label:"Upload SDK for Android"},
-  {id:19, label:"Upload SDK for iOS"},
-  {id:20, label:"Play your videos"},
-  {id:21, label:"Embed your video"},
-  {id:22, label:"Create and manage playlist"},
-  {id:23, label:"Use different media quality levels"},
-  {id:24, label:"Generate JWTs for secure media"},
-  {id:25, label:"Secure media access with JWTs"},
-  {id:26, label:"Secure playback with DRM"},
-  {id:27, label:"Restrict playback access"},
+  {id:13, label:"Ruby SDK"},
+  {id:14, label:"Java SDK"},
+  {id:15, label:"C# SDK"},
+  {id:16, label:"Upload videos directly"},
+  {id:17, label:"Upload videos from URL"},
+  {id:18, label:"Upload 4K videos"},
+  {id:19, label:"Optimize for faster processing"},
+  {id:20, label:"Resumable uploads SDK for Web"},
+  {id:21, label:"Upload SDK for Android"},
+  {id:22, label:"Upload SDK for iOS"},
+  {id:23, label:"Upload SDK for Flutter"},
+  {id:24, label:"Play your videos"},
+  {id:25, label:"Embed your video"},
+  {id:26, label:"Create and manage playlist"},
+  {id:27, label:"Use different media quality levels"},
   {id:28, label:"Add metadata to videos"},
   {id:29, label:"Add watermark to videos"},
   {id:30, label:"Create thumbnails from video"},
@@ -331,102 +319,108 @@ const CARDS = [
   {id:41, label:"Overlay audio at specific timeline"},
   {id:42, label:"MP4 support for offline viewing"},
   {id:43, label:"Stitch multiple videos into one"},
-  {id:44, label:"Enable DRM protection"},
-  {id:45, label:"Moderate NSFW & Profanity"},
-  {id:46, label:"Categorize into named entities"},
-  {id:47, label:"Generate video chapters"},
-  {id:48, label:"Generate video summary"},
-  {id:49, label:"Stream with RTMPS"},
-  {id:50, label:"Stream with SRT"},
-  {id:51, label:"Broadcast using OBS"},
-  {id:52, label:"Mobile live stream with FastPix"},
-  {id:53, label:"Stream using vMix"},
-  {id:54, label:"Manage live streams"},
-  {id:55, label:"Handle disconnects"},
-  {id:56, label:"Webhooks in live stream"},
-  {id:57, label:"Live stream health stats"},
-  {id:58, label:"Add metadata to livestream"},
-  {id:59, label:"Enable live captions"},
-  {id:60, label:"Instant live clipping"},
-  {id:61, label:"Simulcast to social platforms"},
-  {id:62, label:"Stream pre-recorded live"},
-  {id:63, label:"Stream recordings of live streams"},
-  {id:64, label:"DVR-like time shifting"},
-  {id:65, label:"Install FastPix player"},
-  {id:66, label:"Playback uploaded videos"},
-  {id:67, label:"Integrate video data with player"},
-  {id:68, label:"Handle player errors"},
-  {id:69, label:"Adjust player layout and UI"},
-  {id:70, label:"Set branding color"},
-  {id:71, label:"Show or hide controls"},
-  {id:72, label:"Autoplay, loop, muted playback"},
-  {id:73, label:"Control playback speed"},
-  {id:74, label:"Switch subtitle and audio tracks"},
-  {id:75, label:"Timeline hover previews"},
-  {id:76, label:"Add chapters in video timeline"},
-  {id:77, label:"Chromecast videos (Beta)"},
-  {id:78, label:"Keyboard shortcuts for player"},
-  {id:79, label:"Secure video playback (signed URLs)"},
-  {id:80, label:"Playback DRM content"},
-  {id:81, label:"Add shoppable video"},
-  {id:82, label:"FastPix player for iOS"},
-  {id:83, label:"FastPix player for Android"},
-  {id:84, label:"FastPix player for Flutter"},
-  {id:85, label:"Monitor FastPix player (Web)"},
-  {id:86, label:"Monitor Shaka player (Web)"},
-  {id:87, label:"Monitor HLS.js (Web)"},
-  {id:88, label:"Monitor ExoPlayer (Android)"},
-  {id:89, label:"Monitor AVPlayer (iOS)"},
-  {id:90, label:"Audience metrics"},
-  {id:91, label:"Quality of experience (QoE) metrics"},
-  {id:92, label:"Playback metrics"},
-  {id:93, label:"Video startup metrics"},
-  {id:94, label:"Stability metrics"},
-  {id:95, label:"Understand dashboard UI"},
-  {id:96, label:"Use custom dimensions"},
-  {id:97, label:"Troubleshoot playback errors"},
-  {id:98, label:"Import and organize content (Cloud Playout)"},
-  {id:99, label:"Program a loop channel"},
-  {id:100, label:"Program a scheduled channel"},
-  {id:101, label:"Monitor and manage channel"},
+  {id:44, label:"Moderate NSFW & Profanity"},
+  {id:45, label:"Categorize into named entities"},
+  {id:46, label:"Generate video chapters"},
+  {id:47, label:"Generate video summary"},
+  {id:48, label:"Generate JWTs for secure media"},
+  {id:49, label:"Secure media access with JWTs"},
+  {id:50, label:"Restrict playback access"},
+  {id:51, label:"Secure playback with DRM"},
+  {id:52, label:"Enable DRM protection"},
+  {id:53, label:"Stream with RTMPS"},
+  {id:54, label:"Stream with SRT"},
+  {id:55, label:"Broadcast using OBS"},
+  {id:56, label:"Mobile live stream with FastPix"},
+  {id:57, label:"Stream using vMix"},
+  {id:58, label:"Stream pre-recorded live"},
+  {id:59, label:"Manage live streams"},
+  {id:60, label:"Handle disconnects"},
+  {id:61, label:"Webhooks in live stream"},
+  {id:62, label:"Live stream health stats"},
+  {id:63, label:"Add metadata to livestream"},
+  {id:64, label:"Enable live captions"},
+  {id:65, label:"Instant live clipping"},
+  {id:66, label:"Simulcast to social platforms"},
+  {id:67, label:"Stream recordings of live streams"},
+  {id:68, label:"DVR-like time shifting"},
+  {id:69, label:"Install FastPix player"},
+  {id:70, label:"Playback uploaded videos"},
+  {id:71, label:"Integrate video data with player"},
+  {id:72, label:"Handle player errors"},
+  {id:73, label:"Adjust player layout and UI"},
+  {id:74, label:"Set branding color"},
+  {id:75, label:"Show or hide controls"},
+  {id:76, label:"Set aspect ratio"},
+  {id:77, label:"Display title on video"},
+  {id:78, label:"Change controls backdrop color"},
+  {id:79, label:"Autoplay, loop, muted playback"},
+  {id:80, label:"Control playback speed"},
+  {id:81, label:"Set volume preference"},
+  {id:82, label:"Control playback resolution"},
+  {id:83, label:"Set playback start point"},
+  {id:84, label:"Change seek time"},
+  {id:85, label:"Switch subtitle and audio tracks"},
+  {id:86, label:"Timeline hover previews"},
+  {id:87, label:"Add chapters in video timeline"},
+  {id:88, label:"Chromecast videos (Beta)"},
+  {id:89, label:"Keyboard shortcuts for player"},
+  {id:90, label:"Add shoppable video"},
+  {id:91, label:"Secure video playback (signed URLs)"},
+  {id:92, label:"Playback DRM content"},
+  {id:93, label:"Use custom domain in player"},
+  {id:94, label:"Preload video and crossorigin"},
+  {id:95, label:"Enable lazy loading"},
+  {id:96, label:"Listen to video events"},
+  {id:97, label:"FastPix player for iOS"},
+  {id:98, label:"FastPix player for Android"},
+  {id:99, label:"FastPix player for Flutter"},
+  {id:100, label:"Monitor FastPix player (Web)"},
+  {id:101, label:"Monitor Shaka player (Web)"},
+  {id:102, label:"Monitor HLS.js (Web)"},
+  {id:103, label:"Monitor Video.js (Web)"},
+  {id:104, label:"Monitor ExoPlayer (Android)"},
+  {id:105, label:"Monitor AVPlayer (iOS)"},
+  {id:106, label:"Monitor React Native"},
+  {id:107, label:"Monitor Better Player (Flutter)"},
+  {id:108, label:"Audience metrics"},
+  {id:109, label:"Quality of experience (QoE) metrics"},
+  {id:110, label:"Playback metrics"},
+  {id:111, label:"Video startup metrics"},
+  {id:112, label:"Stability metrics"},
+  {id:113, label:"Render quality metrics"},
+  {id:114, label:"Understand dashboard UI"},
+  {id:115, label:"Create workflows with API"},
+  {id:116, label:"Use passable dimensions"},
+  {id:117, label:"Use custom dimensions"},
+  {id:118, label:"Troubleshoot playback errors"},
+  {id:119, label:"Import and organize content (Cloud Playout)"},
+  {id:120, label:"Configure playout elements"},
+  {id:121, label:"Program a loop channel"},
+  {id:122, label:"Program a scheduled channel"},
+  {id:123, label:"Monitor and manage channel"},
 ];
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-// ════════════════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════════════════
-let email="", unsorted=[], buckets={}, dragId=null, dragFrom=null, confidence=null;
+let email="",unsorted=[],buckets={},dragId=null,dragFrom=null,confidence=null;
 
-// ════════════════════════════════════════════════════════
-// UTILS
-// ════════════════════════════════════════════════════════
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
 function toast(m,t='',d=2500){const el=document.getElementById('toast');el.textContent=m;el.className='show'+(t?' '+t:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',d)}
 function dl(n,c,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();URL.revokeObjectURL(a.href)}
 
-// ════════════════════════════════════════════════════════
-// INTRO
-// ════════════════════════════════════════════════════════
-document.getElementById('btn-start').onclick = startSort;
-document.getElementById('email').onkeydown = e=>{if(e.key==='Enter')startSort()};
+document.getElementById('btn-start').onclick=startSort;
+document.getElementById('email').onkeydown=e=>{if(e.key==='Enter')startSort()};
 function startSort(){
-  const inp=document.getElementById('email'), err=document.getElementById('email-err');
-  const v=inp.value.trim();
+  const inp=document.getElementById('email'),err=document.getElementById('email-err'),v=inp.value.trim();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){inp.classList.add('err');err.style.display='block';return}
-  inp.classList.remove('err');err.style.display='none';
-  email=v;
-  unsorted=shuffle([...CARDS]);
-  buckets={}; ALL_SUBS.forEach(id=>buckets[id]=[]);
-  show('sort'); renderAll();
+  inp.classList.remove('err');err.style.display='none';email=v;
+  unsorted=shuffle([...CARDS]);buckets={};ALL_SUBS.forEach(id=>buckets[id]=[]);
+  show('sort');renderAll();
 }
 
-// ════════════════════════════════════════════════════════
-// SORT RENDERING
-// ════════════════════════════════════════════════════════
-function renderAll(){ renderUnsorted(); renderCats(); updateProgress(); }
-
+function renderAll(){renderUnsorted();renderCats();updateProgress()}
 function renderUnsorted(){
   const list=document.getElementById('unsorted-list');
   document.getElementById('unsorted-count').textContent=unsorted.length+' remaining';
@@ -434,7 +428,7 @@ function renderUnsorted(){
   if(!unsorted.length){list.innerHTML='<div class="empty-msg">All cards sorted! 🎉</div>';return}
   unsorted.forEach(card=>{
     const el=document.createElement('div');el.className='card';el.draggable=true;el.dataset.id=card.id;
-    el.innerHTML=`<span class="grip">⠿</span><span class="label">${esc(card.label)}</span>`;
+    el.innerHTML=`<span class="grip">⠿</span><span>${esc(card.label)}</span>`;
     el.addEventListener('dragstart',e=>{dragId=card.id;dragFrom=null;el.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
     el.addEventListener('dragend',()=>el.classList.remove('dragging'));
     list.appendChild(el);
@@ -442,43 +436,36 @@ function renderUnsorted(){
 }
 
 function renderCats(){
-  const panel=document.getElementById('cats-panel'); panel.innerHTML='';
+  const panel=document.getElementById('cats-panel');panel.innerHTML='';
   STRUCTURE.forEach(parent=>{
     const group=document.createElement('div');group.className='parent-group';
-    // Parent count
-    let parentTotal=0; parent.subs.forEach(s=>parentTotal+=buckets[s.id].length);
+    let parentTotal=0;parent.subs.forEach(s=>parentTotal+=buckets[s.id].length);
     group.innerHTML=`<div class="parent-head"><span class="parent-icon">${parent.icon}</span><span class="parent-name">${esc(parent.name)}</span><span class="parent-count">${parentTotal} cards</span></div>`;
     const grid=document.createElement('div');grid.className='sub-grid';
-
     parent.subs.forEach(sub=>{
-      const bucket=document.createElement('div');bucket.className='sub-bucket';bucket.dataset.sub=sub.id;
+      const bucket=document.createElement('div');
+      bucket.className='sub-bucket'+(sub.isUnsure?' unsure-bucket':'');
+      bucket.dataset.sub=sub.id;
       const cards=buckets[sub.id];
       bucket.innerHTML=`<div class="sub-head"><span class="sub-name">${esc(sub.name)}</span><span class="sub-count">${cards.length}</span></div>`;
       const cardsDiv=document.createElement('div');cardsDiv.className='sub-cards';
-
       cards.forEach(card=>{
         const el=document.createElement('div');el.className='sub-card';el.draggable=true;
-        el.innerHTML=`<span class="label">${esc(card.label)}</span><button class="remove" title="Remove">×</button>`;
-        el.querySelector('.remove').onclick=()=>{
-          buckets[sub.id]=buckets[sub.id].filter(c=>c.id!==card.id);
-          unsorted.push(card); renderAll();
-        };
+        el.innerHTML=`<span>${esc(card.label)}</span><button class="remove" title="Remove">×</button>`;
+        el.querySelector('.remove').onclick=()=>{buckets[sub.id]=buckets[sub.id].filter(c=>c.id!==card.id);unsorted.push(card);renderAll()};
         el.addEventListener('dragstart',e=>{dragId=card.id;dragFrom=sub.id;el.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
         el.addEventListener('dragend',()=>el.classList.remove('dragging'));
         cardsDiv.appendChild(el);
       });
-      if(!cards.length) cardsDiv.innerHTML='<div class="sub-drop">Drop guides here</div>';
+      if(!cards.length)cardsDiv.innerHTML='<div class="sub-drop">Drop guides here</div>';
       bucket.appendChild(cardsDiv);
-
-      // Drop handlers
       bucket.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';bucket.classList.add('drag-over')});
       bucket.addEventListener('dragleave',e=>{if(!bucket.contains(e.relatedTarget))bucket.classList.remove('drag-over')});
       bucket.addEventListener('drop',e=>{
-        e.preventDefault();bucket.classList.remove('drag-over');
-        if(!dragId)return;
+        e.preventDefault();bucket.classList.remove('drag-over');if(!dragId)return;
         const card=CARDS.find(c=>c.id===dragId);if(!card)return;
         unsorted=unsorted.filter(c=>c.id!==dragId);
-        if(dragFrom){buckets[dragFrom]=buckets[dragFrom].filter(c=>c.id!==dragId)}
+        if(dragFrom)buckets[dragFrom]=buckets[dragFrom].filter(c=>c.id!==dragId);
         if(!buckets[sub.id].find(c=>c.id===dragId))buckets[sub.id].push(card);
         dragId=null;dragFrom=null;renderAll();
       });
@@ -488,7 +475,6 @@ function renderCats(){
   });
 }
 
-// Drop back to unsorted
 const up=document.getElementById('unsorted-panel');
 up.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move'});
 up.addEventListener('drop',e=>{
@@ -500,8 +486,7 @@ up.addEventListener('drop',e=>{
 });
 
 function updateProgress(){
-  const sorted=CARDS.length-unsorted.length;
-  const pct=Math.round(sorted/CARDS.length*100);
+  const sorted=CARDS.length-unsorted.length;const pct=Math.round(sorted/CARDS.length*100);
   document.getElementById('prog-fill').style.width=pct+'%';
   document.getElementById('prog-pct').textContent=pct+'%';
   document.getElementById('tb-stats').textContent=`${sorted} / ${CARDS.length} sorted`;
@@ -509,10 +494,6 @@ function updateProgress(){
 }
 
 document.getElementById('btn-review').onclick=()=>{show('review');renderReview()};
-
-// ════════════════════════════════════════════════════════
-// REVIEW
-// ════════════════════════════════════════════════════════
 document.getElementById('btn-back').onclick=()=>show('sort');
 
 function renderReview(){
@@ -525,9 +506,9 @@ function renderReview(){
     parent.subs.forEach(sub=>{
       const cards=buckets[sub.id];
       const sd=document.createElement('div');sd.className='review-sub';
-      sd.innerHTML=`<h4>${esc(sub.name)}<span style="font:400 10px var(--mono);color:var(--t3)">${cards.length} cards</span></h4>`;
+      sd.innerHTML=`<h4>${esc(sub.name)}<span style="font:400 10px var(--mono);color:var(--t3)">${cards.length}</span></h4>`;
       const chips=document.createElement('div');chips.className='review-chips';
-      if(!cards.length){chips.innerHTML='<span class="review-empty">Empty</span>'}
+      if(!cards.length)chips.innerHTML='<span class="review-empty">Empty</span>';
       else cards.forEach(c=>{const ch=document.createElement('span');ch.className='review-chip';ch.textContent=c.label;chips.appendChild(ch)});
       sd.appendChild(chips);pg.appendChild(sd);
     });
@@ -535,7 +516,7 @@ function renderReview(){
   });
   if(unsorted.length){
     const ud=document.createElement('div');ud.className='review-parent review-unsorted';
-    ud.innerHTML=`<div class="review-parent-head">⚠️ Unsorted (${unsorted.length})</div>`;
+    ud.innerHTML=`<div class="review-parent-head">⚠️ Still unsorted (${unsorted.length})</div>`;
     const chips=document.createElement('div');chips.className='review-chips';
     unsorted.forEach(c=>{const ch=document.createElement('span');ch.className='review-chip';ch.textContent=c.label;chips.appendChild(ch)});
     ud.appendChild(chips);container.appendChild(ud);
@@ -548,96 +529,62 @@ function renderReview(){
   });
 }
 
-// ════════════════════════════════════════════════════════
-// SUBMIT
-// ════════════════════════════════════════════════════════
 document.getElementById('btn-submit').onclick=submitSort;
-
 async function submitSort(){
-  const btn=document.getElementById('btn-submit');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Submitting…';
-
-  // Build placement data with parent + subsection context
+  const btn=document.getElementById('btn-submit');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Submitting…';
   const placements=[];
-  STRUCTURE.forEach(parent=>{
-    parent.subs.forEach(sub=>{
-      buckets[sub.id].forEach(card=>{
-        placements.push({ card:card.label, parent:parent.name, subsection:sub.name });
-      });
-    });
-  });
-
-  const payload={
-    email,
-    timestamp:new Date().toISOString(),
-    confidence,
-    feedback:document.getElementById('feedback').value.trim(),
-    totalCards:CARDS.length,
-    totalSorted:CARDS.length-unsorted.length,
+  STRUCTURE.forEach(parent=>{parent.subs.forEach(sub=>{buckets[sub.id].forEach(card=>{placements.push({card:card.label,parent:parent.name,subsection:sub.name,isUnsure:!!sub.isUnsure})})})});
+  const payload={email,timestamp:new Date().toISOString(),confidence,feedback:document.getElementById('feedback').value.trim(),totalCards:CARDS.length,totalSorted:CARDS.length-unsorted.length,
+    notSureCount:buckets['unsure.bucket']?buckets['unsure.bucket'].length:0,
     placements,
-    categories:STRUCTURE.map(p=>({
-      name:p.name,
-      subsections:p.subs.map(s=>({
-        name:s.name, cards:buckets[s.id].map(c=>c.label)
-      }))
-    })),
-    unsortedCards:unsorted.map(c=>c.label),
-  };
-
+    categories:STRUCTURE.map(p=>({name:p.name,subsections:p.subs.map(s=>({name:s.name,cards:buckets[s.id].map(c=>c.label),isUnsure:!!s.isUnsure}))})),
+    unsortedCards:unsorted.map(c=>c.label)};
   try{const x=JSON.parse(localStorage.getItem(SK)||'[]');x.push(payload);localStorage.setItem(SK,JSON.stringify(x))}catch(e){}
-  if(WEBHOOK&&WEBHOOK!=="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"){
-    try{await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}
-  }
+  if(WEBHOOK&&WEBHOOK!=="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"){try{await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}}
   show('done');
 }
 
-// ════════════════════════════════════════════════════════
-// ADMIN (#admin)
-// ════════════════════════════════════════════════════════
 window.addEventListener('hashchange',()=>{if(location.hash==='#admin'){show('admin');renderAdmin()}else if(!location.hash||location.hash==='#')show('intro')});
 if(location.hash==='#admin'){show('admin');renderAdmin()}
-
 function renderAdmin(){
   const w=document.getElementById('admin-content');
   if(!sessionStorage.getItem('adm')){
     w.innerHTML=`<div class="admin-login"><h3>Admin</h3><input type="password" class="field" id="adm-pw" placeholder="Password" style="width:100%;margin-bottom:12px"/><button class="btn btn-fp" id="adm-btn" style="width:100%">Log in</button></div>`;
-    document.getElementById('adm-btn').onclick=()=>{if(document.getElementById('adm-pw').value===ADMIN_PW){sessionStorage.setItem('adm','1');renderAdmin()}else toast('Wrong password','err')};
+    document.getElementById('adm-btn').onclick=()=>{if(document.getElementById('adm-pw').value===ADMIN_PW){sessionStorage.setItem('adm','1');renderAdmin()}else toast('Wrong','err')};
     document.getElementById('adm-pw').onkeydown=e=>{if(e.key==='Enter')document.getElementById('adm-btn').click()};return;
   }
   const subs=JSON.parse(localStorage.getItem(SK)||'[]');
   const avgConf=subs.filter(s=>s.confidence).length?(subs.reduce((a,s)=>a+(s.confidence||0),0)/subs.filter(s=>s.confidence).length).toFixed(1):'—';
-  const avgSorted=subs.length?(subs.reduce((a,s)=>a+s.totalSorted,0)/subs.length).toFixed(0):'—';
-
+  const avgUnsure=subs.length?(subs.reduce((a,s)=>a+(s.notSureCount||0),0)/subs.length).toFixed(1):'—';
   let html=`<button class="btn btn-ghost" onclick="location.hash='';show('intro')" style="margin-bottom:16px">← Back</button>
     <h2 style="font-size:24px;font-weight:700;margin-bottom:4px">Card Sort Results</h2>
     <p style="font:400 13px var(--mono);color:var(--t2);margin-bottom:20px">${subs.length} submissions</p>
     <div class="stat-row">
       <div class="stat-box"><div class="stat-v">${subs.length}</div><div class="stat-l">Submissions</div></div>
       <div class="stat-box"><div class="stat-v">${avgConf}</div><div class="stat-l">Avg confidence</div></div>
-      <div class="stat-box"><div class="stat-v">${avgSorted}</div><div class="stat-l">Avg sorted</div></div>
+      <div class="stat-box"><div class="stat-v">${avgUnsure}</div><div class="stat-l">Avg "not sure" cards</div></div>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
       <button class="btn btn-ghost" id="exp-json">Export JSON</button>
       <button class="btn btn-ghost" id="exp-csv">Export CSV</button>
       <button class="btn btn-ghost" id="btn-clear" style="color:var(--err);border-color:var(--err)">Clear</button>
     </div>`;
-  if(!subs.length){html+='<div class="empty-msg">No submissions yet.</div>'}
+  if(!subs.length)html+='<div class="empty-msg">No submissions yet.</div>';
   else subs.slice().reverse().forEach(s=>{
-    html+=`<div class="sub-card-admin"><div class="sub-head-admin"><span class="sub-email">${esc(s.email)}</span><span class="sub-time">${new Date(s.timestamp).toLocaleString()}</span></div>
-    <div class="sub-detail">Sorted: ${s.totalSorted}/${s.totalCards} · Confidence: ${s.confidence||'—'}/5</div>
-    ${(s.categories||[]).map(cat=>`<div class="sub-detail" style="margin-top:4px"><strong style="color:var(--fp)">${esc(cat.name)}</strong>: ${cat.subsections.map(sub=>`<em>${esc(sub.name)}</em> (${sub.cards.length})`).join(', ')}</div>`).join('')}
-    ${s.feedback?`<div class="sub-fb">"${esc(s.feedback)}"</div>`:''}
+    html+=`<div class="sub-card-admin"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px"><span style="font:600 13px var(--font);color:var(--fp)">${esc(s.email)}</span><span style="font:400 10px var(--mono);color:var(--t3)">${new Date(s.timestamp).toLocaleString()}</span></div>
+    <div style="font:400 11px var(--mono);color:var(--t2);margin-bottom:4px">Sorted: ${s.totalSorted}/${s.totalCards} · Confidence: ${s.confidence||'—'}/5 · Not sure: ${s.notSureCount||0}</div>
+    ${s.feedback?`<div style="margin-top:6px;padding:8px 12px;background:var(--s2);border-radius:var(--r2);font:400 11px var(--mono);color:var(--t2);border-left:3px solid var(--fp)">"${esc(s.feedback)}"</div>`:''}
     </div>`;
   });
   w.innerHTML=html;
   document.getElementById('exp-json').onclick=()=>{dl('fastpix-cardsort.json',JSON.stringify(subs,null,2),'application/json');toast('Exported','ok')};
   document.getElementById('exp-csv').onclick=()=>{
-    const rows=[['Email','Timestamp','Confidence','Card','Parent Category','Subsection']];
-    subs.forEach(s=>(s.placements||[]).forEach(p=>rows.push([s.email,s.timestamp,s.confidence||'',p.card,p.parent,p.subsection])));
-    subs.forEach(s=>(s.unsortedCards||[]).forEach(c=>rows.push([s.email,s.timestamp,s.confidence||'',c,'[Unsorted]','[Unsorted]'])));
+    const rows=[['Email','Timestamp','Confidence','Card','Parent Category','Subsection','Is Not Sure']];
+    subs.forEach(s=>(s.placements||[]).forEach(p=>rows.push([s.email,s.timestamp,s.confidence||'',p.card,p.parent,p.subsection,p.isUnsure?'Yes':'No'])));
+    subs.forEach(s=>(s.unsortedCards||[]).forEach(c=>rows.push([s.email,s.timestamp,s.confidence||'',c,'[Unsorted]','[Unsorted]',''])));
     dl('fastpix-cardsort.csv',rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),'text/csv');toast('Exported','ok');
   };
-  document.getElementById('btn-clear').onclick=()=>{if(confirm('Clear all local data?')){localStorage.removeItem(SK);renderAdmin();toast('Cleared')}};
+  document.getElementById('btn-clear').onclick=()=>{if(confirm('Clear?')){localStorage.removeItem(SK);renderAdmin();toast('Cleared')}};
 }
 </script>
 </body>
