@@ -1,2374 +1,644 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FastPix Docs — Card Sorting Exercise</title>
-  <meta name="description"
-    content="Help FastPix improve documentation by sorting topics into categories that make sense to you." />
-  <meta property="og:title" content="FastPix Docs — Card Sorting Exercise" />
-  <meta property="og:description" content="Help us organize FastPix documentation better. Takes ~10-15 minutes." />
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23E84E1B'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='16' font-weight='bold' fill='white'>FP</text></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
-    rel="stylesheet" />
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --accent: #E84E1B;
-      --accent-hover: #d4441a;
-      --accent-glow: rgba(232, 78, 27, 0.15);
-      --bg: #0A0A0A;
-      --surface: #151515;
-      --surface2: #1E1E1E;
-      --surface3: #282828;
-      --border: #2A2A2A;
-      --border-hover: #3A3A3A;
-      --text: #F0EFED;
-      --text2: #8A8A8A;
-      --text3: #5A5A5A;
-      --danger: #e53e3e;
-      --success: #38a169;
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-mono: 'IBM Plex Mono', monospace;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-display);
-      line-height: 1.5;
-      min-height: 100vh;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    ::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text3);
-    }
-
-    /* ===== SCREENS ===== */
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    /* ===== TOAST ===== */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      padding: 12px 24px;
-      border-radius: var(--radius-md);
-      font-size: 14px;
-      font-family: var(--font-mono);
-      z-index: 9999;
-      opacity: 0;
-      transition: all 0.3s ease;
-      pointer-events: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .toast.success {
-      background: var(--success);
-      color: white;
-    }
-
-    .toast.error {
-      background: var(--danger);
-      color: white;
-    }
-
-    .toast.info {
-      background: var(--surface3);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    /* ===== INTRO ===== */
-    #intro-screen {
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .intro-wrap {
-      max-width: 620px;
-      width: 100%;
-    }
-
-    .intro-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 36px;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: var(--radius-md);
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 17px;
-      color: white;
-      letter-spacing: -0.5px;
-    }
-
-    .brand-label {
-      color: var(--text2);
-      font-size: 13px;
-      font-family: var(--font-mono);
-      letter-spacing: 0.02em;
-    }
-
-    .intro-title {
-      font-size: clamp(30px, 5vw, 44px);
-      font-weight: 700;
-      line-height: 1.12;
-      margin-bottom: 20px;
-      letter-spacing: -0.02em;
-    }
-
-    .intro-title span {
-      color: var(--accent);
-    }
-
-    .intro-desc {
-      color: var(--text2);
-      font-size: 16px;
-      line-height: 1.75;
-      max-width: 500;
-      margin-bottom: 40px;
-    }
-
-    .intro-desc strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .card-box {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      border: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-
-    .card-box h3 {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .how-step {
-      color: var(--text2);
-      font-size: 14px;
-      margin: 10px 0;
-      line-height: 1.8;
-    }
-
-    .how-step b {
-      color: var(--accent);
-      font-weight: 600;
-      margin-right: 2px;
-    }
-
-    .email-label {
-      font-size: 14px;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 10px;
-    }
-
-    .email-row {
-      display: flex;
-      gap: 12px;
-    }
-
-    .input-field {
-      flex: 1;
-      padding: 12px 16px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      font-family: var(--font-mono);
-      transition: border-color 0.15s;
-    }
-
-    .input-field:focus {
-      border-color: var(--accent);
-    }
-
-    .input-field.error {
-      border-color: var(--danger);
-    }
-
-    .btn-primary {
-      padding: 12px 28px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      font-family: var(--font-display);
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-
-    .btn-primary:disabled {
-      background: var(--surface3);
-      color: var(--text3);
-      cursor: default;
-      transform: none;
-    }
-
-    .email-hint {
-      color: var(--text3);
-      font-size: 11px;
-      margin-top: 14px;
-      font-family: var(--font-mono);
-    }
-
-    .email-error {
-      color: var(--danger);
-      font-size: 12px;
-      margin-top: 8px;
-      font-family: var(--font-mono);
-      display: none;
-    }
-
-    /* ===== SORT SCREEN ===== */
-    #sort-screen {
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 10, 10, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .topbar-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 7px;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 12px;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .topbar-title {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .topbar-sub {
-      color: var(--text2);
-      font-size: 11px;
-      font-family: var(--font-mono);
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .progress-track {
-      width: 140px;
-      height: 5px;
-      background: var(--surface3);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 3px;
-      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      width: 0%;
-    }
-
-    .progress-pct {
-      color: var(--text2);
-      font-size: 11px;
-      font-family: var(--font-mono);
-      min-width: 32px;
-      text-align: right;
-    }
-
-    .sort-layout {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    /* Left panel */
-    .unsorted-panel {
-      width: 310px;
-      min-width: 280px;
-      border-right: 1px solid var(--border);
-      padding: 20px;
-      overflow-y: auto;
-      background: var(--bg);
-      flex-shrink: 0;
-      transition: background 0.2s;
-    }
-
-    .unsorted-panel.drag-over {
-      background: rgba(232, 78, 27, 0.04);
-    }
-
-    .unsorted-header h3 {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .unsorted-header p {
-      color: var(--text2);
-      font-size: 11px;
-      font-family: var(--font-mono);
-      margin-bottom: 16px;
-    }
-
-    .unsorted-list {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .card-item {
-      padding: 7px 10px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      cursor: grab;
-      font-size: 12.5px;
-      color: var(--text);
-      transition: all 0.12s ease;
-      line-height: 1.45;
-      font-family: var(--font-mono);
-      user-select: none;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .card-item:hover {
-      border-color: var(--accent);
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(232, 78, 27, 0.1);
-    }
-
-    .card-item.dragging {
-      opacity: 0.35;
-      border-color: var(--accent);
-    }
-
-    .card-item .card-label {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .card-item .card-original {
-      display: block;
-      font-size: 10px;
-      color: var(--text3);
-      margin-top: 2px;
-      text-decoration: line-through;
-      font-style: italic;
-    }
-
-    .card-item .card-renamed-badge {
-      font-size: 9px;
-      color: var(--accent);
-      background: var(--accent-glow);
-      padding: 1px 5px;
-      border-radius: 3px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .card-edit-btn {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      font-size: 13px;
-      padding: 2px 4px;
-      border-radius: 3px;
-      flex-shrink: 0;
-      transition: all 0.1s;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-    }
-
-    .card-edit-btn:hover {
-      color: var(--accent);
-      background: var(--accent-glow);
-    }
-
-    .card-edit-input {
-      width: 100%;
-      padding: 6px 10px;
-      background: var(--bg);
-      border: 1px solid var(--accent);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-size: 12.5px;
-      font-family: var(--font-mono);
-      outline: none;
-    }
-
-    .card-edit-wrap {
-      padding: 6px 10px;
-      background: var(--surface2);
-      border: 1px solid var(--accent);
-      border-radius: var(--radius-sm);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .card-edit-actions {
-      display: flex;
-      gap: 6px;
-      justify-content: flex-end;
-    }
-
-    .card-edit-actions button {
-      padding: 3px 10px;
-      border-radius: 4px;
-      font-size: 11px;
-      cursor: pointer;
-      font-family: var(--font-mono);
-      border: none;
-    }
-
-    .card-edit-save {
-      background: var(--accent);
-      color: white;
-    }
-
-    .card-edit-save:hover {
-      background: var(--accent-hover);
-    }
-
-    .card-edit-cancel {
-      background: var(--surface3);
-      color: var(--text2);
-    }
-
-    .card-edit-cancel:hover {
-      background: var(--border);
-    }
-
-    .card-edit-reset {
-      background: none;
-      color: var(--text3);
-      border: 1px solid var(--border) !important;
-    }
-
-    .card-edit-reset:hover {
-      color: var(--text2);
-      border-color: var(--border-hover) !important;
-    }
-
-    .suggest-card-row {
-      margin-bottom: 10px;
-    }
-
-    .btn-suggest-card {
-      padding: 6px 12px;
-      background: var(--surface2);
-      color: var(--accent);
-      border: 1px dashed var(--accent);
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      font-family: var(--font-mono);
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.15s;
-    }
-
-    .btn-suggest-card:hover {
-      background: var(--accent-glow);
-    }
-
-    .suggest-card-form {
-      margin-bottom: 10px;
-    }
-
-    .empty-state {
-      padding: 28px;
-      text-align: center;
-      color: var(--text2);
-      font-size: 13px;
-      border: 1.5px dashed var(--border);
-      border-radius: var(--radius-lg);
-      font-family: var(--font-mono);
-    }
-
-    /* Right panel */
-    .categories-panel {
-      flex: 1;
-      padding: 20px 24px;
-      overflow-y: auto;
-    }
-
-    .add-cat-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    .cat-name-input {
-      padding: 10px 14px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text);
-      font-size: 13px;
-      width: 260px;
-      outline: none;
-      font-family: var(--font-mono);
-      transition: border-color 0.15s;
-    }
-
-    .cat-name-input:focus {
-      border-color: var(--accent);
-    }
-
-    .btn-add-cat {
-      padding: 10px 18px;
-      background: var(--surface2);
-      color: var(--accent);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: var(--font-display);
-      transition: all 0.15s;
-    }
-
-    .btn-add-cat:hover {
-      border-color: var(--accent);
-      background: var(--accent-glow);
-    }
-
-    .cat-empty-state {
-      padding: 52px 24px;
-      text-align: center;
-      border: 1.5px dashed var(--border);
-      border-radius: 16px;
-      color: var(--text2);
-    }
-
-    .cat-empty-state .emoji {
-      font-size: 40px;
-      margin-bottom: 14px;
-    }
-
-    .cat-empty-state h3 {
-      color: var(--text);
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .cat-empty-state p {
-      font-size: 13px;
-      font-family: var(--font-mono);
-      max-width: 380px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-
-    .cat-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 14px;
-    }
-
-    .category-bucket {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 18px;
-      min-height: 120px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-
-    .category-bucket.drag-over {
-      border-color: var(--accent);
-      background: rgba(232, 78, 27, 0.05);
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .cat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2px;
-    }
-
-    .cat-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--accent);
-      cursor: pointer;
-      font-family: var(--font-display);
-      letter-spacing: 0.01em;
-      border: none;
-      background: none;
-      outline: none;
-      padding: 0;
-      text-align: left;
-    }
-
-    .cat-name:hover {
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .cat-name-edit {
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid var(--accent);
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 700;
-      font-family: var(--font-display);
-      outline: none;
-      padding: 2px 0;
-      width: 100%;
-    }
-
-    .cat-delete {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      font-size: 18px;
-      line-height: 1;
-      padding: 2px 6px;
-      border-radius: 4px;
-      transition: all 0.1s;
-    }
-
-    .cat-delete:hover {
-      color: var(--danger);
-      background: rgba(229, 62, 62, 0.1);
-    }
-
-    .cat-count {
-      font-size: 11px;
-      color: var(--text3);
-      font-family: var(--font-mono);
-    }
-
-    .cat-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .cat-card-item {
-      padding: 6px 10px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      color: var(--text);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-      cursor: grab;
-      font-family: var(--font-mono);
-      user-select: none;
-      transition: all 0.1s;
-    }
-
-    .cat-card-item:hover {
-      border-color: var(--border-hover);
-    }
-
-    .cat-card-item.drop-above {
-      border-top: 2px solid var(--accent);
-      margin-top: -1px;
-    }
-
-    .cat-card-item.drop-below {
-      border-bottom: 2px solid var(--accent);
-      margin-bottom: -1px;
-    }
-
-    .cat-card-item.dragging {
-      opacity: 0.35;
-    }
-
-    .cat-card-item.drop-above {
-      border-top: 2px solid var(--accent);
-      margin-top: -1px;
-    }
-
-    .cat-card-item.drop-below {
-      border-bottom: 2px solid var(--accent);
-      margin-bottom: -1px;
-    }
-
-    .cat-card-item .card-label {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .cat-card-item .card-original {
-      display: block;
-      font-size: 9.5px;
-      color: var(--text3);
-      margin-top: 1px;
-      text-decoration: line-through;
-      font-style: italic;
-    }
-
-    .cat-card-item .card-renamed-badge {
-      font-size: 8px;
-      color: var(--accent);
-      background: var(--accent-glow);
-      padding: 1px 4px;
-      border-radius: 3px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .cat-card-btns {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      flex-shrink: 0;
-    }
-
-    .cat-card-remove {
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      font-size: 14px;
-      padding: 0;
-      line-height: 1;
-      flex-shrink: 0;
-      border-radius: 3px;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.1s;
-    }
-
-    .cat-card-remove:hover {
-      color: var(--danger);
-      background: rgba(229, 62, 62, 0.1);
-    }
-
-    /* ===== REVIEW SCREEN ===== */
-    #review-screen {
-      flex-direction: column;
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .review-wrap {
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .btn-back {
-      background: none;
-      border: none;
-      color: var(--accent);
-      font-size: 14px;
-      cursor: pointer;
-      padding: 0;
-      margin-bottom: 24px;
-      font-family: var(--font-display);
-    }
-
-    .btn-back:hover {
-      text-decoration: underline;
-    }
-
-    .review-title {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
-    }
-
-    .review-sub {
-      color: var(--text2);
-      font-size: 14px;
-      margin-bottom: 28px;
-      font-family: var(--font-mono);
-    }
-
-    .review-categories {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
-    .review-cat {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      border: 1px solid var(--border);
-    }
-
-    .review-cat h3 {
-      color: var(--accent);
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .review-cat-cards {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .review-chip {
-      padding: 5px 11px;
-      background: var(--surface2);
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      color: var(--text);
-      font-family: var(--font-mono);
-      border: 1px solid var(--border);
-    }
-
-    .review-cat.unsorted {
-      opacity: 0.6;
-    }
-
-    .review-cat.unsorted h3 {
-      color: var(--text2);
-    }
-
-    .review-cat.unsorted .review-chip {
-      color: var(--text2);
-    }
-
-    .feedback-box {
-      margin-bottom: 20px;
-    }
-
-    .feedback-label {
-      font-size: 14px;
-      font-weight: 600;
-      display: block;
-      margin-bottom: 10px;
-    }
-
-    .feedback-textarea {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-      resize: vertical;
-      font-family: var(--font-mono);
-      min-height: 100px;
-      transition: border-color 0.15s;
-    }
-
-    .feedback-textarea:focus {
-      border-color: var(--accent);
-    }
-
-    .btn-submit {
-      padding: 14px 36px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      font-family: var(--font-display);
-      transition: all 0.15s;
-      width: 100%;
-    }
-
-    .btn-submit:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-submit:active {
-      transform: translateY(0);
-    }
-
-    .btn-submit:disabled {
-      background: var(--surface3);
-      color: var(--text3);
-      cursor: wait;
-      transform: none;
-    }
-
-    /* ===== DONE SCREEN ===== */
-    #done-screen {
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
-
-    .done-wrap {
-      text-align: center;
-      max-width: 500px;
-    }
-
-    .done-check {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 28px;
-      font-size: 34px;
-      color: white;
-      box-shadow: 0 0 40px rgba(232, 78, 27, 0.3);
-    }
-
-    .done-title {
-      font-size: 34px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      letter-spacing: -0.02em;
-    }
-
-    .done-desc {
-      color: var(--text2);
-      font-size: 16px;
-      line-height: 1.7;
-    }
-
-    /* ===== ADMIN SCREEN ===== */
-    #admin-screen {
-      flex-direction: column;
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .admin-wrap {
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .admin-title {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      letter-spacing: -0.01em;
-    }
-
-    .admin-sub {
-      color: var(--text2);
-      font-size: 14px;
-      margin-bottom: 12px;
-      font-family: var(--font-mono);
-    }
-
-    .admin-login-box {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 32px;
-      border: 1px solid var(--border);
-      max-width: 400px;
-      margin: 80px auto;
-    }
-
-    .admin-login-box h3 {
-      margin-bottom: 16px;
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .admin-pass-input {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      color: var(--text);
-      font-size: 14px;
-      outline: none;
-      font-family: var(--font-mono);
-      margin-bottom: 14px;
-      transition: border-color 0.15s;
-    }
-
-    .admin-pass-input:focus {
-      border-color: var(--accent);
-    }
-
-    .admin-actions {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-
-    .btn-secondary {
-      padding: 10px 18px;
-      background: var(--surface2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      font-family: var(--font-display);
-      transition: all 0.15s;
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .submission-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 14px;
-    }
-
-    .submission-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .submission-email {
-      font-weight: 600;
-      color: var(--accent);
-      font-size: 15px;
-    }
-
-    .submission-time {
-      color: var(--text2);
-      font-size: 12px;
-      font-family: var(--font-mono);
-    }
-
-    .submission-cat {
-      margin-bottom: 12px;
-    }
-
-    .submission-cat-name {
-      font-weight: 600;
-      font-size: 13px;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .submission-cat-cards {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-
-    .submission-chip {
-      padding: 3px 9px;
-      background: var(--surface2);
-      border-radius: 4px;
-      font-size: 11px;
-      color: var(--text2);
-      font-family: var(--font-mono);
-      border: 1px solid var(--border);
-    }
-
-    .submission-feedback {
-      margin-top: 12px;
-      padding: 12px 16px;
-      background: var(--surface2);
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      color: var(--text2);
-      font-family: var(--font-mono);
-      border-left: 3px solid var(--accent);
-    }
-
-    .no-submissions {
-      text-align: center;
-      padding: 52px;
-      color: var(--text2);
-      border: 1.5px dashed var(--border);
-      border-radius: var(--radius-lg);
-      font-family: var(--font-mono);
-    }
-
-    .stat-row {
-      display: flex;
-      gap: 14px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-
-    .stat-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      min-width: 130px;
-      flex: 1;
-    }
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text2);
-      font-family: var(--font-mono);
-      margin-top: 4px;
-    }
-
-    /* ===== SPINNER ===== */
-    .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      vertical-align: middle;
-      margin-right: 8px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .sort-layout {
-        flex-direction: column;
-      }
-
-      .unsorted-panel {
-        width: 100%;
-        min-width: 100%;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        max-height: 35vh;
-      }
-
-      .topbar {
-        padding: 10px 14px;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .progress-track {
-        width: 90px;
-      }
-
-      .email-row {
-        flex-direction: column;
-      }
-
-      .cat-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .cat-name-input {
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>FastPix Docs — Closed Card Sort</title>
+<meta name="description" content="Help FastPix organize documentation by sorting guides into the right section."/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23E84E1B'/><text x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='16' font-weight='bold' fill='white'>FP</text></svg>"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --fp:#E84E1B;--fp-h:#cf4318;--fp-glow:rgba(232,78,27,.10);
+  --bg:#09090b;--s1:#111113;--s2:#19191d;--s3:#222228;
+  --b1:#27272a;--b2:#3f3f46;
+  --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+  --ok:#22c55e;--err:#ef4444;
+  --font:'DM Sans',system-ui,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --r1:6px;--r2:10px;--r3:14px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font-family:var(--font);line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--b1);border-radius:3px}
+.screen{display:none}.screen.active{display:flex}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);padding:10px 22px;border-radius:var(--r2);font:500 13px/1.4 var(--mono);z-index:9999;opacity:0;transition:.3s;pointer-events:none;background:var(--s3);color:var(--t1);border:1px solid var(--b1)}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}#toast.ok{border-color:var(--ok);color:var(--ok)}#toast.err{border-color:var(--err);color:var(--err)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border:none;border-radius:var(--r2);font:600 13px var(--font);cursor:pointer;transition:.15s;white-space:nowrap}
+.btn-fp{background:var(--fp);color:#fff}.btn-fp:hover{background:var(--fp-h);transform:translateY(-1px)}.btn-fp:disabled{background:var(--s3);color:var(--t3);cursor:default;transform:none}
+.btn-ghost{background:transparent;border:1px solid var(--b1);color:var(--t2)}.btn-ghost:hover{border-color:var(--fp);color:var(--fp)}
+.field{padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);color:var(--t1);font:400 13.5px var(--mono);outline:none;transition:border .15s}.field:focus{border-color:var(--fp)}.field.err{border-color:var(--err)}
+
+/* ── Intro ── */
+#intro{min-height:100vh;align-items:center;justify-content:center;padding:32px 20px}
+.intro-w{max-width:600px;width:100%}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.logo-box{width:36px;height:36px;background:var(--fp);border-radius:8px;display:flex;align-items:center;justify-content:center;font:700 14px var(--font);color:#fff}
+.logo-label{font:500 12px var(--mono);color:var(--t3)}
+h1{font-size:clamp(26px,4.5vw,38px);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:14px}
+h1 em{font-style:normal;color:var(--fp)}
+.intro-p{color:var(--t2);font-size:15px;line-height:1.75;margin-bottom:32px}.intro-p strong{color:var(--t1);font-weight:600}
+.card-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);padding:24px;margin-bottom:20px}
+.card-box h3{font-size:15px;font-weight:600;margin-bottom:12px}
+.step{color:var(--t2);font-size:13.5px;line-height:1.75;margin:7px 0}.step b{color:var(--fp);margin-right:2px}
+.email-row{display:flex;gap:10px}
+.field-err{color:var(--err);font:400 11px var(--mono);margin-top:6px;display:none}
+.hint{color:var(--t3);font:400 11px var(--mono);margin-top:10px}
+
+/* ── Sort screen ── */
+#sort{flex-direction:column;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(9,9,11,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--b1);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-ico{width:26px;height:26px;background:var(--fp);border-radius:6px;display:flex;align-items:center;justify-content:center;font:700 10px var(--font);color:#fff;flex-shrink:0}
+.tb-title{font:600 13px var(--font)}.tb-sub{font:400 11px var(--mono);color:var(--t3)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.progress-track{width:120px;height:5px;background:var(--s3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--fp);border-radius:3px;transition:width .3s}
+.progress-pct{font:500 11px var(--mono);color:var(--t3);min-width:32px;text-align:right}
+.sort-layout{display:flex;flex:1;overflow:hidden}
+
+/* Left panel */
+.unsorted-panel{width:320px;min-width:280px;border-right:1px solid var(--b1);display:flex;flex-direction:column;background:var(--bg)}
+.unsorted-head{padding:16px 18px;border-bottom:1px solid var(--b1)}
+.unsorted-head h3{font:600 13px var(--font);margin-bottom:2px}
+.unsorted-head p{font:400 11px var(--mono);color:var(--t3)}
+.unsorted-list{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:4px}
+.card{padding:7px 10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r1);font:400 12px var(--mono);color:var(--t1);cursor:grab;user-select:none;transition:.12s;line-height:1.4;display:flex;align-items:center;gap:7px}
+.card:hover{border-color:var(--fp);transform:translateY(-1px);box-shadow:0 2px 8px rgba(232,78,27,.08)}
+.card.dragging{opacity:.3;border-color:var(--fp)}
+.card .grip{color:var(--t3);font-size:10px;flex-shrink:0}
+.card .label{flex:1;min-width:0}
+.empty-msg{padding:20px;text-align:center;color:var(--t3);font:400 12px var(--mono);border:1.5px dashed var(--b1);border-radius:var(--r2)}
+
+/* Right panel — categories with subsections */
+.cats-panel{flex:1;overflow-y:auto;padding:20px}
+
+.parent-group{margin-bottom:20px}
+.parent-head{display:flex;align-items:center;gap:8px;padding:10px 0 8px;border-bottom:1px solid var(--b1);margin-bottom:10px}
+.parent-icon{font-size:18px}
+.parent-name{font:700 16px var(--font);color:var(--t1);letter-spacing:-.01em}
+.parent-count{font:400 10px var(--mono);color:var(--t3);margin-left:auto}
+
+.sub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+
+.sub-bucket{background:var(--s1);border:1.5px solid var(--b1);border-radius:var(--r2);min-height:80px;display:flex;flex-direction:column;transition:.2s}
+.sub-bucket.drag-over{border-color:var(--fp);background:rgba(232,78,27,.03);box-shadow:0 0 0 1px var(--fp)}
+.sub-head{padding:10px 12px 6px;display:flex;align-items:center;justify-content:space-between}
+.sub-name{font:600 12.5px var(--font);color:var(--fp)}
+.sub-count{font:400 10px var(--mono);color:var(--t3)}
+.sub-cards{padding:4px 8px 8px;display:flex;flex-direction:column;gap:3px;flex:1}
+.sub-card{padding:5px 8px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r1);font:400 11px var(--mono);color:var(--t2);display:flex;align-items:center;gap:5px;cursor:grab;user-select:none;transition:.1s}
+.sub-card:hover{border-color:var(--b2)}
+.sub-card .remove{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:0 2px;line-height:1;margin-left:auto;flex-shrink:0;border-radius:3px;transition:.1s}
+.sub-card .remove:hover{color:var(--err);background:rgba(239,68,68,.1)}
+.sub-drop{padding:10px;text-align:center;color:var(--t3);font:400 10px var(--mono);border:1.5px dashed var(--b1);border-radius:var(--r1);margin:4px 8px 8px}
+
+/* ── Review ── */
+#review{flex-direction:column;min-height:100vh;padding:24px}
+.review-w{max-width:760px;margin:0 auto;width:100%}
+.review-parent{margin-bottom:18px}
+.review-parent-head{font:700 15px var(--font);color:var(--t1);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.review-sub{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:14px;margin-bottom:8px}
+.review-sub h4{font:600 12px var(--font);color:var(--fp);margin-bottom:8px;display:flex;justify-content:space-between}
+.review-chips{display:flex;flex-wrap:wrap;gap:5px}
+.review-chip{padding:4px 9px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r1);font:400 11px var(--mono);color:var(--t2)}
+.review-empty{color:var(--t3);font:italic 11px var(--mono)}
+.review-unsorted{opacity:.6}
+.fb-group{margin-bottom:16px}
+.fb-label{font:600 13px var(--font);display:block;margin-bottom:8px}
+.fb-sub{font:400 11px var(--mono);color:var(--t2);margin-bottom:10px}
+textarea.fb-area{width:100%;padding:12px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);color:var(--t1);font:400 12px var(--mono);outline:none;resize:vertical;min-height:80px;transition:border .15s}
+textarea.fb-area:focus{border-color:var(--fp)}
+.conf-row{display:flex;gap:6px;flex-wrap:wrap}
+.conf-btn{padding:7px 12px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);font:500 11px var(--mono);color:var(--t2);cursor:pointer;transition:.15s}
+.conf-btn:hover{border-color:var(--b2);color:var(--t1)}
+.conf-btn.active{border-color:var(--fp);color:var(--fp);background:var(--fp-glow)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Done ── */
+#done{min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.done-w{text-align:center;max-width:460px}
+.done-ico{width:64px;height:64px;border-radius:50%;background:var(--fp);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:28px;color:#fff;box-shadow:0 0 40px rgba(232,78,27,.25)}
+.done-h{font-size:30px;font-weight:700;margin-bottom:10px}.done-p{color:var(--t2);font-size:15px;line-height:1.7}
+
+/* ── Admin ── */
+#admin{flex-direction:column;min-height:100vh;padding:24px}
+.admin-w{max-width:900px;margin:0 auto;width:100%}
+.admin-login{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);padding:32px;max-width:360px;margin:80px auto}
+.admin-login h3{font-size:18px;font-weight:700;margin-bottom:14px}
+.stat-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.stat-box{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:14px 18px;flex:1;min-width:110px}
+.stat-v{font:700 24px var(--font);color:var(--fp)}.stat-l{font:400 10px var(--mono);color:var(--t2);margin-top:3px}
+.sub-card-admin{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:16px;margin-bottom:10px}
+.sub-head-admin{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.sub-email{font:600 13px var(--font);color:var(--fp)}.sub-time{font:400 11px var(--mono);color:var(--t3)}
+.sub-detail{font:400 11px var(--mono);color:var(--t2);margin-bottom:2px}
+.sub-fb{margin-top:6px;padding:8px 12px;background:var(--s2);border-radius:var(--r2);font:400 11px var(--mono);color:var(--t2);border-left:3px solid var(--fp)}
+
+@media(max-width:768px){
+  .sort-layout{flex-direction:column}
+  .unsorted-panel{width:100%;min-width:100%;border-right:none;border-bottom:1px solid var(--b1);max-height:36vh}
+  .sub-grid{grid-template-columns:1fr}
+  .email-row{flex-direction:column}
+  .topbar{padding:8px 14px}
+  .progress-track{width:80px}
+}
+</style>
 </head>
-
 <body>
+<div id="toast"></div>
 
-  <div id="toast" class="toast"></div>
+<!-- ═══ INTRO ═══ -->
+<div id="intro" class="screen active">
+<div class="intro-w">
+  <div class="logo-row"><div class="logo-box">FP</div><span class="logo-label">FastPix · Docs IA Research</span></div>
+  <h1>Help us test our <em>documentation structure.</em></h1>
+  <p class="intro-p">
+    This is a <strong>closed card sorting exercise</strong>. You'll see guide titles from FastPix docs on the left.
+    On the right are our <strong>product categories with subsections</strong> — exactly like a docs sidebar.
+    Drag each guide into the specific subsection where you'd naturally look for it.
+  </p>
+  <div class="card-box">
+    <h3>How it works</h3>
+    <p class="step"><b>1.</b> ~70 guide titles appear as draggable cards on the left (shuffled randomly).</p>
+    <p class="step"><b>2.</b> On the right are categories like "Video on Demand" with subsections like "Input & Playback", "Secure your playback", etc.</p>
+    <p class="step"><b>3.</b> Drag each card into the specific subsection where you'd expect to find it.</p>
+    <p class="step"><b>4.</b> Review, rate your confidence, and tell us which cards were hard to place. Takes ~10 min.</p>
+  </div>
+  <div class="card-box">
+    <label style="font:600 13px var(--font);display:block;margin-bottom:8px">Enter your email to begin</label>
+    <div class="email-row">
+      <input type="email" id="email" class="field" style="flex:1" placeholder="you@company.com" autocomplete="email"/>
+      <button class="btn btn-fp" id="btn-start">Start sorting →</button>
+    </div>
+    <p class="field-err" id="email-err">Please enter a valid email.</p>
+    <p class="hint">We'll only use this to follow up on your input if needed.</p>
+  </div>
+</div>
+</div>
 
-  <!-- ===== INTRO SCREEN ===== -->
-  <div id="intro-screen" class="screen active">
-    <div class="intro-wrap">
-      <div class="intro-brand">
-        <div class="brand-icon">FP</div>
-        <span class="brand-label">FastPix · Documentation IA Research</span>
-      </div>
-      <h1 class="intro-title">
-        Help us organize our<br><span>documentation</span> better.
-      </h1>
-      <p class="intro-desc">
-        This is a <strong>card sorting exercise</strong>. You'll see <strong>80 cards</strong>
-        representing pages from FastPix docs. Group them into categories that make sense to you
-        — name the categories whatever you want.
-      </p>
+<!-- ═══ SORT ═══ -->
+<div id="sort" class="screen">
+<div class="topbar">
+  <div class="tb-left"><div class="tb-ico">FP</div><div><div class="tb-title">Closed Card Sort</div><div class="tb-sub" id="tb-stats">0 / 0 sorted</div></div></div>
+  <div class="tb-right">
+    <div style="display:flex;align-items:center;gap:8px"><div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div><span class="progress-pct" id="prog-pct">0%</span></div>
+    <button class="btn btn-fp" id="btn-review" disabled>Review & submit</button>
+  </div>
+</div>
+<div class="sort-layout">
+  <div class="unsorted-panel" id="unsorted-panel">
+    <div class="unsorted-head"><h3>Unsorted guides</h3><p id="unsorted-count"></p></div>
+    <div class="unsorted-list" id="unsorted-list"></div>
+  </div>
+  <div class="cats-panel" id="cats-panel"></div>
+</div>
+</div>
 
-      <div class="card-box">
-        <h3>How it works</h3>
-        <p class="how-step"><b>1.</b> Create categories that make sense to you — name them anything you'd naturally look
-          for.</p>
-        <p class="how-step"><b>2.</b> Drag each card into the category where you'd expect to find it. You can also
-          <strong style="color:var(--text)">rename cards</strong> using the ✏️ button if you'd word something
-          differently.
-        </p>
-        <p class="how-step"><b>3.</b> Review and submit. Move cards between categories or back to unsorted anytime.</p>
-      </div>
-
-      <div class="card-box">
-        <label class="email-label">Enter your email to get started</label>
-        <div class="email-row">
-          <input type="email" id="email-input" class="input-field" placeholder="you@example.com" autocomplete="email" />
-          <button class="btn-primary" id="btn-start">Start sorting →</button>
-        </div>
-        <p class="email-error" id="email-error">Please enter a valid email address.</p>
-        <p class="email-hint">Your email helps us follow up on your input. Takes ~10–15 min.</p>
-      </div>
+<!-- ═══ REVIEW ═══ -->
+<div id="review" class="screen">
+<div class="review-w">
+  <button class="btn btn-ghost" id="btn-back" style="margin-bottom:20px">← Back to sorting</button>
+  <h2 style="font-size:24px;font-weight:700;margin-bottom:6px">Review your sort</h2>
+  <p style="font:400 13px var(--mono);color:var(--t2);margin-bottom:24px" id="review-stats"></p>
+  <div id="review-cats"></div>
+  <div class="card-box" style="margin-top:20px">
+    <div class="fb-group">
+      <label class="fb-label">How confident are you in your placements?</label>
+      <div class="conf-row" id="conf-row"></div>
+    </div>
+    <div class="fb-group">
+      <label class="fb-label">Which cards were hard to place and why? <span style="font-weight:400;color:var(--t3)">(optional)</span></label>
+      <p class="fb-sub">This is the most valuable part — tell us where you hesitated.</p>
+      <textarea class="fb-area" id="feedback" placeholder="e.g. 'Auto-generate subtitles' could go in Transforms or AI — I wasn't sure which…"></textarea>
     </div>
   </div>
+  <button class="btn btn-fp" id="btn-submit" style="width:100%;margin-top:16px;padding:14px;font-size:15px">Submit my card sort</button>
+</div>
+</div>
 
-  <!-- ===== SORT SCREEN ===== -->
-  <div id="sort-screen" class="screen">
-    <div class="topbar">
-      <div class="topbar-left">
-        <div class="topbar-icon">FP</div>
-        <div>
-          <div class="topbar-title">FastPix Card Sort</div>
-          <div class="topbar-sub" id="topbar-stats">0/80 sorted · 0 categories</div>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <div class="progress-track">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <span class="progress-pct" id="progress-pct">0%</span>
-        <button class="btn-primary" id="btn-review" disabled>Review & Submit</button>
-      </div>
-    </div>
-    <div class="sort-layout">
-      <div class="unsorted-panel" id="unsorted-panel">
-        <div class="unsorted-header">
-          <h3>Unsorted cards</h3>
-          <p id="unsorted-count">80 remaining — drag to a category</p>
-          <div class="suggest-card-row" id="suggest-card-row">
-            <button class="btn-suggest-card" id="btn-suggest-card">+ Suggest a card</button>
-          </div>
-          <div class="suggest-card-form" id="suggest-card-form" style="display:none;">
-            <input type="text" class="card-edit-input" id="suggest-card-input"
-              placeholder="Enter your suggested card title..." />
-            <div class="card-edit-actions" style="margin-top:6px;">
-              <button class="card-edit-save" id="suggest-card-save">Add card</button>
-              <button class="card-edit-cancel" id="suggest-card-cancel">Cancel</button>
-            </div>
-          </div>
-        </div>
-        <div class="unsorted-list" id="unsorted-list"></div>
-      </div>
-      <div class="categories-panel" id="categories-panel">
-        <div class="add-cat-row">
-          <input type="text" class="cat-name-input" id="new-cat-input" placeholder="New category name..." />
-          <button class="btn-add-cat" id="btn-add-cat">+ Add category</button>
-        </div>
-        <div id="cat-container"></div>
-      </div>
-    </div>
-  </div>
+<!-- ═══ DONE ═══ -->
+<div id="done" class="screen">
+<div class="done-w">
+  <div class="done-ico">✓</div>
+  <h1 class="done-h">Thank you!</h1>
+  <p class="done-p">Your card sort has been submitted. Your input will directly shape how we reorganize FastPix documentation.</p>
+</div>
+</div>
 
-  <!-- ===== REVIEW SCREEN ===== -->
-  <div id="review-screen" class="screen">
-    <div class="review-wrap">
-      <button class="btn-back" id="btn-back-sort">← Back to sorting</button>
-      <h2 class="review-title">Review your sort</h2>
-      <p class="review-sub" id="review-stats"></p>
-      <div class="review-categories" id="review-categories"></div>
-      <div class="card-box feedback-box">
-        <label class="feedback-label">Any additional thoughts on how FastPix docs should be organized?
-          (optional)</label>
-        <textarea class="feedback-textarea" id="feedback-input"
-          placeholder="e.g. I found it hard to decide where SDK docs should go vs. quickstart guides..."></textarea>
-      </div>
-      <button class="btn-submit" id="btn-submit">Submit my card sort</button>
-    </div>
-  </div>
+<!-- ═══ ADMIN ═══ -->
+<div id="admin" class="screen"><div class="admin-w" id="admin-content"></div></div>
 
-  <!-- ===== DONE SCREEN ===== -->
-  <div id="done-screen" class="screen">
-    <div class="done-wrap">
-      <div class="done-check">✓</div>
-      <h1 class="done-title">Thank you!</h1>
-      <p class="done-desc">Your card sort has been submitted successfully. Your input will directly shape the next
-        version of FastPix documentation.</p>
-    </div>
-  </div>
+<script>
+// ════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════
+const WEBHOOK = "https://script.google.com/macros/s/AKfycbxrhwWDPV8qWId_dnFsdj3Mp9K8ah3lHQS8PzCinia8K4upLyD0Bke3kkvE8NwqNYGn/exec";
+const ADMIN_PW = "Ashu@fp_2025";
+const SK = "fp_closed_sort_v2";
 
-  <!-- ===== ADMIN SCREEN ===== -->
-  <div id="admin-screen" class="screen">
-    <div class="admin-wrap" id="admin-content"></div>
-  </div>
+// ════════════════════════════════════════════════════════
+// CATEGORIES → SUBSECTIONS (the closed sort buckets)
+// Each subsection is a drop target. Parent is just a visual grouper.
+// ════════════════════════════════════════════════════════
+const STRUCTURE = [
+  { id:"platform", icon:"🚀", name:"Getting Started & Platform", subs:[
+    { id:"platform.setup", name:"Account & Setup" },
+    { id:"platform.webhooks", name:"Webhooks & Events" },
+    { id:"platform.sdks", name:"Language SDKs" },
+  ]},
+  { id:"vod", icon:"🎬", name:"Video on Demand", subs:[
+    { id:"vod.upload", name:"Upload & Process" },
+    { id:"vod.play", name:"Play & Deliver" },
+    { id:"vod.edit", name:"Edit & Transform" },
+    { id:"vod.ai", name:"AI Features" },
+    { id:"vod.secure", name:"Secure Your Content" },
+  ]},
+  { id:"live", icon:"📡", name:"Live Streaming", subs:[
+    { id:"live.go", name:"Go Live (Protocols & Encoders)" },
+    { id:"live.manage", name:"Stream Management" },
+    { id:"live.enhance", name:"Live Enhancements" },
+  ]},
+  { id:"data", icon:"📊", name:"Video Data & Analytics", subs:[
+    { id:"data.sdks", name:"Install Monitoring SDKs" },
+    { id:"data.metrics", name:"Understand Metrics" },
+    { id:"data.dash", name:"Dashboard & Custom Workflows" },
+  ]},
+  { id:"player", icon:"▶️", name:"Video Player", subs:[
+    { id:"player.install", name:"Install & Play" },
+    { id:"player.look", name:"Customize Look & Feel" },
+    { id:"player.behavior", name:"Customize Playback Behavior" },
+    { id:"player.secure", name:"DRM & Security" },
+    { id:"player.mobile", name:"Mobile & Cross-Platform" },
+  ]},
+  { id:"playout", icon:"☁️", name:"Cloud Playout", subs:[
+    { id:"playout.setup", name:"Import & Organize Content" },
+    { id:"playout.channels", name:"Program & Manage Channels" },
+  ]},
+];
 
+// Build a flat list of all subsection IDs for state management
+const ALL_SUBS = [];
+STRUCTURE.forEach(p => p.subs.forEach(s => ALL_SUBS.push(s.id)));
 
-  <script>
-    // ================================================================
-    // CONFIGURATION — UPDATE THESE TWO VALUES BEFORE DEPLOYING
-    // ================================================================
+// ════════════════════════════════════════════════════════
+// CARDS (guide pages from docs.fastpix.io)
+// ════════════════════════════════════════════════════════
+const CARDS = [
+  {id:1, label:"Activate your FastPix account"},
+  {id:2, label:"Set up workspace"},
+  {id:3, label:"Setup webhooks"},
+  {id:4, label:"Webhooks collection"},
+  {id:5, label:"Media events"},
+  {id:6, label:"Transform media events"},
+  {id:7, label:"In-video AI events"},
+  {id:8, label:"Live events"},
+  {id:9, label:"Node.js SDK"},
+  {id:10, label:"PHP SDK"},
+  {id:11, label:"Python SDK"},
+  {id:12, label:"Go SDK"},
+  {id:13, label:"Upload videos directly"},
+  {id:14, label:"Upload videos from URL"},
+  {id:15, label:"Upload 4K videos"},
+  {id:16, label:"Optimize for faster processing"},
+  {id:17, label:"Resumable uploads SDK for Web"},
+  {id:18, label:"Upload SDK for Android"},
+  {id:19, label:"Upload SDK for iOS"},
+  {id:20, label:"Play your videos"},
+  {id:21, label:"Embed your video"},
+  {id:22, label:"Create and manage playlist"},
+  {id:23, label:"Use different media quality levels"},
+  {id:24, label:"Generate JWTs for secure media"},
+  {id:25, label:"Secure media access with JWTs"},
+  {id:26, label:"Secure playback with DRM"},
+  {id:27, label:"Restrict playback access"},
+  {id:28, label:"Add metadata to videos"},
+  {id:29, label:"Add watermark to videos"},
+  {id:30, label:"Create thumbnails from video"},
+  {id:31, label:"Create GIFs from videos"},
+  {id:32, label:"Create clips from existing media"},
+  {id:33, label:"Add timeline hovers"},
+  {id:34, label:"Add own subtitle tracks"},
+  {id:35, label:"Add own audio tracks"},
+  {id:36, label:"Optimize audio loudness"},
+  {id:37, label:"Add auto-generated subtitles"},
+  {id:38, label:"Add intro and outro"},
+  {id:39, label:"Remove unwanted parts"},
+  {id:40, label:"Replace existing audio"},
+  {id:41, label:"Overlay audio at specific timeline"},
+  {id:42, label:"MP4 support for offline viewing"},
+  {id:43, label:"Stitch multiple videos into one"},
+  {id:44, label:"Enable DRM protection"},
+  {id:45, label:"Moderate NSFW & Profanity"},
+  {id:46, label:"Categorize into named entities"},
+  {id:47, label:"Generate video chapters"},
+  {id:48, label:"Generate video summary"},
+  {id:49, label:"Stream with RTMPS"},
+  {id:50, label:"Stream with SRT"},
+  {id:51, label:"Broadcast using OBS"},
+  {id:52, label:"Mobile live stream with FastPix"},
+  {id:53, label:"Stream using vMix"},
+  {id:54, label:"Manage live streams"},
+  {id:55, label:"Handle disconnects"},
+  {id:56, label:"Webhooks in live stream"},
+  {id:57, label:"Live stream health stats"},
+  {id:58, label:"Add metadata to livestream"},
+  {id:59, label:"Enable live captions"},
+  {id:60, label:"Instant live clipping"},
+  {id:61, label:"Simulcast to social platforms"},
+  {id:62, label:"Stream pre-recorded live"},
+  {id:63, label:"Stream recordings of live streams"},
+  {id:64, label:"DVR-like time shifting"},
+  {id:65, label:"Install FastPix player"},
+  {id:66, label:"Playback uploaded videos"},
+  {id:67, label:"Integrate video data with player"},
+  {id:68, label:"Handle player errors"},
+  {id:69, label:"Adjust player layout and UI"},
+  {id:70, label:"Set branding color"},
+  {id:71, label:"Show or hide controls"},
+  {id:72, label:"Autoplay, loop, muted playback"},
+  {id:73, label:"Control playback speed"},
+  {id:74, label:"Switch subtitle and audio tracks"},
+  {id:75, label:"Timeline hover previews"},
+  {id:76, label:"Add chapters in video timeline"},
+  {id:77, label:"Chromecast videos (Beta)"},
+  {id:78, label:"Keyboard shortcuts for player"},
+  {id:79, label:"Secure video playback (signed URLs)"},
+  {id:80, label:"Playback DRM content"},
+  {id:81, label:"Add shoppable video"},
+  {id:82, label:"FastPix player for iOS"},
+  {id:83, label:"FastPix player for Android"},
+  {id:84, label:"FastPix player for Flutter"},
+  {id:85, label:"Monitor FastPix player (Web)"},
+  {id:86, label:"Monitor Shaka player (Web)"},
+  {id:87, label:"Monitor HLS.js (Web)"},
+  {id:88, label:"Monitor ExoPlayer (Android)"},
+  {id:89, label:"Monitor AVPlayer (iOS)"},
+  {id:90, label:"Audience metrics"},
+  {id:91, label:"Quality of experience (QoE) metrics"},
+  {id:92, label:"Playback metrics"},
+  {id:93, label:"Video startup metrics"},
+  {id:94, label:"Stability metrics"},
+  {id:95, label:"Understand dashboard UI"},
+  {id:96, label:"Use custom dimensions"},
+  {id:97, label:"Troubleshoot playback errors"},
+  {id:98, label:"Import and organize content (Cloud Playout)"},
+  {id:99, label:"Program a loop channel"},
+  {id:100, label:"Program a scheduled channel"},
+  {id:101, label:"Monitor and manage channel"},
+];
 
-    // 1. Paste your Google Apps Script Web App URL here (see setup guide)
-    const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxuqIx-whVjv-A06FuZqyTmTgcE0n7JPHNv5dg-fmKNbNVGH2houYZEMjSkxv4FFYN_/exec";
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-    // 2. Set your admin password for the #admin dashboard
-    const ADMIN_PASSWORD = "Ashu@fp_2025";
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let email="", unsorted=[], buckets={}, dragId=null, dragFrom=null, confidence=null;
 
-    // ================================================================
+// ════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function toast(m,t='',d=2500){const el=document.getElementById('toast');el.textContent=m;el.className='show'+(t?' '+t:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',d)}
+function dl(n,c,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();URL.revokeObjectURL(a.href)}
 
-    const STORAGE_KEY = "fastpix_card_sort_submissions";
+// ════════════════════════════════════════════════════════
+// INTRO
+// ════════════════════════════════════════════════════════
+document.getElementById('btn-start').onclick = startSort;
+document.getElementById('email').onkeydown = e=>{if(e.key==='Enter')startSort()};
+function startSort(){
+  const inp=document.getElementById('email'), err=document.getElementById('email-err');
+  const v=inp.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){inp.classList.add('err');err.style.display='block';return}
+  inp.classList.remove('err');err.style.display='none';
+  email=v;
+  unsorted=shuffle([...CARDS]);
+  buckets={}; ALL_SUBS.forEach(id=>buckets[id]=[]);
+  show('sort'); renderAll();
+}
 
-    const ALL_CARDS = [
-      { id: 1, label: "Activate your FastPix account" },
-      { id: 2, label: "Set up workspace" },
-      { id: 3, label: "Setup webhooks" },
-      { id: 4, label: "Webhooks collection" },
-      { id: 5, label: "Media events" },
-      { id: 6, label: "Live events" },
-      { id: 7, label: "Node.js SDK" },
-      { id: 8, label: "PHP SDK" },
-      { id: 9, label: "Python SDK" },
-      { id: 10, label: "Go SDK" },
-      { id: 11, label: "Java SDK" },
-      { id: 12, label: "Ruby SDK" },
-      { id: 13, label: "C# SDK" },
-      { id: 14, label: "Upload videos directly" },
-      { id: 15, label: "Upload videos from URL" },
-      { id: 16, label: "Upload 4K videos" },
-      { id: 17, label: "Resumable upload SDKs (Web, Android, iOS, Flutter)" },
-      { id: 18, label: "Play your videos" },
-      { id: 19, label: "Embed your video" },
-      { id: 20, label: "Create and manage playlist" },
-      { id: 21, label: "Use different media quality levels" },
-      { id: 22, label: "Generate JWTs for secure media" },
-      { id: 23, label: "Secure playback with DRM" },
-      { id: 24, label: "Restrict playback access" },
-      { id: 25, label: "Add metadata to videos" },
-      { id: 26, label: "Add watermark to videos" },
-      { id: 27, label: "Create thumbnails from video" },
-      { id: 28, label: "Create GIFs from videos" },
-      { id: 29, label: "Create clips from existing media" },
-      { id: 30, label: "Add timeline hovers" },
-      { id: 31, label: "Manage subtitle tracks" },
-      { id: 32, label: "Manage audio tracks" },
-      { id: 33, label: "Optimize audio loudness" },
-      { id: 34, label: "Add auto-generated subtitles" },
-      { id: 35, label: "Add intro and outro" },
-      { id: 36, label: "Remove unwanted parts" },
-      { id: 37, label: "Replace existing audio" },
-      { id: 38, label: "Stitch multiple videos into one" },
-      { id: 39, label: "MP4 support for offline viewing" },
-      { id: 40, label: "NSFW & Profanity moderation" },
-      { id: 41, label: "Generate named entities" },
-      { id: 42, label: "Generate video chapters" },
-      { id: 43, label: "Generate video summary" },
-      { id: 44, label: "Stream with RTMPS" },
-      { id: 45, label: "Stream with SRT" },
-      { id: 46, label: "Broadcast using OBS" },
-      { id: 47, label: "Mobile live streaming" },
-      { id: 48, label: "Manage live streams" },
-      { id: 49, label: "Handle disconnects" },
-      { id: 50, label: "Live stream health stats" },
-      { id: 51, label: "Enable live captions" },
-      { id: 52, label: "Simulcast to social platforms" },
-      { id: 53, label: "Stream pre-recorded live" },
-      { id: 54, label: "DVR-like time shifting" },
-      { id: 55, label: "Instant live clipping" },
-      { id: 56, label: "Install video data SDK" },
-      { id: 57, label: "Monitor FastPix player (Web)" },
-      { id: 58, label: "Monitor ExoPlayer (Android)" },
-      { id: 59, label: "Monitor AVPlayer (iOS)" },
-      { id: 60, label: "Audience metrics" },
-      { id: 61, label: "Quality of experience (QoE) metrics" },
-      { id: 62, label: "Playback metrics" },
-      { id: 63, label: "Video startup metrics" },
-      { id: 64, label: "Understand dashboard UI" },
-      { id: 65, label: "Custom dimensions & metadata" },
-      { id: 66, label: "Install FastPix player (Web)" },
-      { id: 67, label: "Customize player interface (layout, color, controls)" },
-      { id: 68, label: "Customize playback experience (autoplay, speed, resolution)" },
-      { id: 69, label: "Keyboard shortcuts for player" },
-      { id: 70, label: "Secure video playback in player" },
-      { id: 71, label: "Playback DRM content" },
-      { id: 72, label: "Add shoppable video" },
-      { id: 73, label: "FastPix player for iOS" },
-      { id: 74, label: "FastPix player for Android" },
-      { id: 75, label: "FastPix player for Flutter" },
-      { id: 76, label: "Cloud Playout — import & organize content" },
-      { id: 77, label: "Cloud Playout — configure playout elements" },
-      { id: 78, label: "Cloud Playout — program channels (loop/scheduled)" },
-      { id: 79, label: "Monitor & manage playout channel" },
-      { id: 80, label: "Troubleshoot playback errors" },
-    ];
+// ════════════════════════════════════════════════════════
+// SORT RENDERING
+// ════════════════════════════════════════════════════════
+function renderAll(){ renderUnsorted(); renderCats(); updateProgress(); }
 
-    // ================================================================
-    // STATE
-    // ================================================================
-    let userEmail = "";
-    let unsortedCards = [...ALL_CARDS];
-    let categories = [];
-    let draggingCardId = null;
-    let draggingFromCat = null;
-    let catIdCounter = 0;
+function renderUnsorted(){
+  const list=document.getElementById('unsorted-list');
+  document.getElementById('unsorted-count').textContent=unsorted.length+' remaining';
+  list.innerHTML='';
+  if(!unsorted.length){list.innerHTML='<div class="empty-msg">All cards sorted! 🎉</div>';return}
+  unsorted.forEach(card=>{
+    const el=document.createElement('div');el.className='card';el.draggable=true;el.dataset.id=card.id;
+    el.innerHTML=`<span class="grip">⠿</span><span class="label">${esc(card.label)}</span>`;
+    el.addEventListener('dragstart',e=>{dragId=card.id;dragFrom=null;el.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+    el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+    list.appendChild(el);
+  });
+}
 
-    // Track card renames: cardId → custom label (only if renamed)
-    let cardRenames = {}; // e.g. { 14: "Direct video upload" }
+function renderCats(){
+  const panel=document.getElementById('cats-panel'); panel.innerHTML='';
+  STRUCTURE.forEach(parent=>{
+    const group=document.createElement('div');group.className='parent-group';
+    // Parent count
+    let parentTotal=0; parent.subs.forEach(s=>parentTotal+=buckets[s.id].length);
+    group.innerHTML=`<div class="parent-head"><span class="parent-icon">${parent.icon}</span><span class="parent-name">${esc(parent.name)}</span><span class="parent-count">${parentTotal} cards</span></div>`;
+    const grid=document.createElement('div');grid.className='sub-grid';
 
-    // Restore a card to its original position in unsortedCards (ignoring suggested cards which always go to top)
-    function restoreToUnsorted(card) {
-      if (unsortedCards.find(c => c.id === card.id)) return;
-      if (card.suggested) { unsortedCards.unshift(card); return; }
-      const originalIndex = ALL_CARDS.findIndex(c => c.id === card.id);
-      let insertAt = unsortedCards.findIndex(c => {
-        if (c.suggested) return false;
-        return ALL_CARDS.findIndex(ac => ac.id === c.id) > originalIndex;
+    parent.subs.forEach(sub=>{
+      const bucket=document.createElement('div');bucket.className='sub-bucket';bucket.dataset.sub=sub.id;
+      const cards=buckets[sub.id];
+      bucket.innerHTML=`<div class="sub-head"><span class="sub-name">${esc(sub.name)}</span><span class="sub-count">${cards.length}</span></div>`;
+      const cardsDiv=document.createElement('div');cardsDiv.className='sub-cards';
+
+      cards.forEach(card=>{
+        const el=document.createElement('div');el.className='sub-card';el.draggable=true;
+        el.innerHTML=`<span class="label">${esc(card.label)}</span><button class="remove" title="Remove">×</button>`;
+        el.querySelector('.remove').onclick=()=>{
+          buckets[sub.id]=buckets[sub.id].filter(c=>c.id!==card.id);
+          unsorted.push(card); renderAll();
+        };
+        el.addEventListener('dragstart',e=>{dragId=card.id;dragFrom=sub.id;el.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+        el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+        cardsDiv.appendChild(el);
       });
-      if (insertAt === -1) unsortedCards.push(card);
-      else unsortedCards.splice(insertAt, 0, card);
-    }
+      if(!cards.length) cardsDiv.innerHTML='<div class="sub-drop">Drop guides here</div>';
+      bucket.appendChild(cardsDiv);
 
-    function getCardLabel(card) {
-      return cardRenames[card.id] || card.label;
-    }
-
-    function isRenamed(card) {
-      return cardRenames[card.id] && cardRenames[card.id] !== card.label;
-    }
-
-    function getOriginalLabel(card) {
-      return card.label;
-    }
-
-    // ================================================================
-    // TOAST NOTIFICATIONS
-    // ================================================================
-    function showToast(msg, type = 'info', duration = 3000) {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = `toast ${type} show`;
-      clearTimeout(el._timer);
-      el._timer = setTimeout(() => el.classList.remove('show'), duration);
-    }
-
-    // ================================================================
-    // NAVIGATION
-    // ================================================================
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo(0, 0);
-    }
-
-    if (window.location.hash === '#admin') {
-      showScreen('admin-screen');
-      renderAdmin();
-    }
-
-    // ================================================================
-    // INTRO
-    // ================================================================
-    document.getElementById('btn-start').addEventListener('click', startSort);
-    document.getElementById('email-input').addEventListener('keydown', e => { if (e.key === 'Enter') startSort(); });
-
-    function startSort() {
-      const input = document.getElementById('email-input');
-      const err = document.getElementById('email-error');
-      const email = input.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        input.classList.add('error');
-        err.style.display = 'block';
-        return;
-      }
-      input.classList.remove('error');
-      err.style.display = 'none';
-      userEmail = email;
-      showScreen('sort-screen');
-      renderUnsorted();
-      renderCategories();
-      updateProgress();
-    }
-
-    // ================================================================
-    // SORT SCREEN
-    // ================================================================
-    function renderUnsorted() {
-      const list = document.getElementById('unsorted-list');
-      const count = document.getElementById('unsorted-count');
-      count.textContent = `${unsortedCards.length} remaining — drag to a category`;
-      list.innerHTML = '';
-
-      if (unsortedCards.length === 0) {
-        list.innerHTML = '<div class="empty-state">All cards sorted! 🎉</div>';
-        return;
-      }
-
-      // Show suggested cards at the top
-      const sortedUnsorted = [...unsortedCards].sort((a, b) => (b.suggested ? 1 : 0) - (a.suggested ? 1 : 0));
-
-      sortedUnsorted.forEach(card => {
-        const el = document.createElement('div');
-        el.className = 'card-item';
-        el.draggable = true;
-        el.dataset.cardId = card.id;
-
-        const labelDiv = document.createElement('div');
-        labelDiv.className = 'card-label';
-        labelDiv.textContent = getCardLabel(card);
-        if (isRenamed(card)) {
-          const orig = document.createElement('span');
-          orig.className = 'card-original';
-          orig.textContent = getOriginalLabel(card);
-          labelDiv.appendChild(orig);
-        }
-
-        el.appendChild(labelDiv);
-        if (isRenamed(card)) {
-          const badge = document.createElement('span');
-          badge.className = 'card-renamed-badge';
-          badge.textContent = 'renamed';
-          el.appendChild(badge);
-        }
-        if (card.suggested) {
-          const sugBadge = document.createElement('span');
-          sugBadge.className = 'card-renamed-badge';
-          sugBadge.style.color = 'var(--success)';
-          sugBadge.style.background = 'rgba(56,161,105,0.12)';
-          sugBadge.textContent = 'suggested';
-          el.appendChild(sugBadge);
-        }
-
-        el.addEventListener('dragstart', e => {
-          draggingCardId = card.id;
-          draggingFromCat = null;
-          el.classList.add('dragging');
-          e.dataTransfer.effectAllowed = 'move';
-        });
-        el.addEventListener('dragend', () => el.classList.remove('dragging'));
-        list.appendChild(el);
+      // Drop handlers
+      bucket.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';bucket.classList.add('drag-over')});
+      bucket.addEventListener('dragleave',e=>{if(!bucket.contains(e.relatedTarget))bucket.classList.remove('drag-over')});
+      bucket.addEventListener('drop',e=>{
+        e.preventDefault();bucket.classList.remove('drag-over');
+        if(!dragId)return;
+        const card=CARDS.find(c=>c.id===dragId);if(!card)return;
+        unsorted=unsorted.filter(c=>c.id!==dragId);
+        if(dragFrom){buckets[dragFrom]=buckets[dragFrom].filter(c=>c.id!==dragId)}
+        if(!buckets[sub.id].find(c=>c.id===dragId))buckets[sub.id].push(card);
+        dragId=null;dragFrom=null;renderAll();
       });
-    }
+      grid.appendChild(bucket);
+    });
+    group.appendChild(grid);panel.appendChild(group);
+  });
+}
 
-    function startCardEdit(card, el, context) {
-      const wrap = document.createElement('div');
-      wrap.className = 'card-edit-wrap';
+// Drop back to unsorted
+const up=document.getElementById('unsorted-panel');
+up.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move'});
+up.addEventListener('drop',e=>{
+  e.preventDefault();if(!dragId||!dragFrom)return;
+  const card=CARDS.find(c=>c.id===dragId);if(!card)return;
+  buckets[dragFrom]=buckets[dragFrom].filter(c=>c.id!==dragId);
+  if(!unsorted.find(c=>c.id===dragId))unsorted.push(card);
+  dragId=null;dragFrom=null;renderAll();
+});
 
-      const input = document.createElement('input');
-      input.className = 'card-edit-input';
-      input.value = getCardLabel(card);
-      input.placeholder = getOriginalLabel(card);
+function updateProgress(){
+  const sorted=CARDS.length-unsorted.length;
+  const pct=Math.round(sorted/CARDS.length*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('tb-stats').textContent=`${sorted} / ${CARDS.length} sorted`;
+  document.getElementById('btn-review').disabled=sorted===0;
+}
 
-      const actions = document.createElement('div');
-      actions.className = 'card-edit-actions';
+document.getElementById('btn-review').onclick=()=>{show('review');renderReview()};
 
-      const saveBtn = document.createElement('button');
-      saveBtn.className = 'card-edit-save';
-      saveBtn.textContent = 'Save';
+// ════════════════════════════════════════════════════════
+// REVIEW
+// ════════════════════════════════════════════════════════
+document.getElementById('btn-back').onclick=()=>show('sort');
 
-      const cancelBtn = document.createElement('button');
-      cancelBtn.className = 'card-edit-cancel';
-      cancelBtn.textContent = 'Cancel';
+function renderReview(){
+  const sorted=CARDS.length-unsorted.length;
+  document.getElementById('review-stats').textContent=`${sorted} of ${CARDS.length} cards sorted`+(unsorted.length?` · ${unsorted.length} unsorted`:'');
+  const container=document.getElementById('review-cats');container.innerHTML='';
+  STRUCTURE.forEach(parent=>{
+    const pg=document.createElement('div');pg.className='review-parent';
+    pg.innerHTML=`<div class="review-parent-head"><span>${parent.icon}</span> ${esc(parent.name)}</div>`;
+    parent.subs.forEach(sub=>{
+      const cards=buckets[sub.id];
+      const sd=document.createElement('div');sd.className='review-sub';
+      sd.innerHTML=`<h4>${esc(sub.name)}<span style="font:400 10px var(--mono);color:var(--t3)">${cards.length} cards</span></h4>`;
+      const chips=document.createElement('div');chips.className='review-chips';
+      if(!cards.length){chips.innerHTML='<span class="review-empty">Empty</span>'}
+      else cards.forEach(c=>{const ch=document.createElement('span');ch.className='review-chip';ch.textContent=c.label;chips.appendChild(ch)});
+      sd.appendChild(chips);pg.appendChild(sd);
+    });
+    container.appendChild(pg);
+  });
+  if(unsorted.length){
+    const ud=document.createElement('div');ud.className='review-parent review-unsorted';
+    ud.innerHTML=`<div class="review-parent-head">⚠️ Unsorted (${unsorted.length})</div>`;
+    const chips=document.createElement('div');chips.className='review-chips';
+    unsorted.forEach(c=>{const ch=document.createElement('span');ch.className='review-chip';ch.textContent=c.label;chips.appendChild(ch)});
+    ud.appendChild(chips);container.appendChild(ud);
+  }
+  const confRow=document.getElementById('conf-row');confRow.innerHTML='';
+  ['Very unsure','Somewhat unsure','Neutral','Fairly confident','Very confident'].forEach((l,i)=>{
+    const b=document.createElement('button');b.className='conf-btn'+(confidence===i+1?' active':'');
+    b.textContent=l;b.onclick=()=>{confidence=i+1;confRow.querySelectorAll('.conf-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};
+    confRow.appendChild(b);
+  });
+}
 
-      const resetBtn = document.createElement('button');
-      resetBtn.className = 'card-edit-reset';
-      resetBtn.textContent = 'Reset to original';
+// ════════════════════════════════════════════════════════
+// SUBMIT
+// ════════════════════════════════════════════════════════
+document.getElementById('btn-submit').onclick=submitSort;
 
-      const doSave = () => {
-        const newLabel = input.value.trim();
-        if (newLabel && newLabel !== card.label) {
-          cardRenames[card.id] = newLabel;
-        } else {
-          delete cardRenames[card.id];
-        }
-        renderUnsorted();
-        renderCategories();
-      };
+async function submitSort(){
+  const btn=document.getElementById('btn-submit');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Submitting…';
 
-      const doCancel = () => {
-        renderUnsorted();
-        renderCategories();
-      };
-
-      const doReset = () => {
-        delete cardRenames[card.id];
-        renderUnsorted();
-        renderCategories();
-      };
-
-      saveBtn.addEventListener('click', e => { e.stopPropagation(); doSave(); });
-      cancelBtn.addEventListener('click', e => { e.stopPropagation(); doCancel(); });
-      resetBtn.addEventListener('click', e => { e.stopPropagation(); doReset(); });
-      input.addEventListener('keydown', e => {
-        e.stopPropagation();
-        if (e.key === 'Enter') doSave();
-        if (e.key === 'Escape') doCancel();
+  // Build placement data with parent + subsection context
+  const placements=[];
+  STRUCTURE.forEach(parent=>{
+    parent.subs.forEach(sub=>{
+      buckets[sub.id].forEach(card=>{
+        placements.push({ card:card.label, parent:parent.name, subsection:sub.name });
       });
-
-      actions.appendChild(saveBtn);
-      actions.appendChild(cancelBtn);
-      if (isRenamed(card)) actions.appendChild(resetBtn);
-
-      wrap.appendChild(input);
-      wrap.appendChild(actions);
-
-      el.replaceWith(wrap);
-      input.focus();
-      input.select();
-    }
-
-    // Drop back to unsorted
-    const unsortedPanel = document.getElementById('unsorted-panel');
-    unsortedPanel.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; unsortedPanel.classList.add('drag-over'); });
-    unsortedPanel.addEventListener('dragleave', e => {
-      if (!unsortedPanel.contains(e.relatedTarget)) unsortedPanel.classList.remove('drag-over');
     });
-    unsortedPanel.addEventListener('drop', e => {
-      e.preventDefault();
-      unsortedPanel.classList.remove('drag-over');
-      if (!draggingCardId || !draggingFromCat) return;
-      const card = ALL_CARDS.find(c => c.id === draggingCardId);
-      if (!card) return;
-      const cat = categories.find(c => c.id === draggingFromCat);
-      if (cat) cat.cards = cat.cards.filter(c => c.id !== draggingCardId);
-      restoreToUnsorted(card);
-      draggingCardId = null;
-      draggingFromCat = null;
-      renderUnsorted();
-      renderCategories();
-      updateProgress();
-    });
-
-    // ================================================================
-    // SUGGEST A CARD
-    // ================================================================
-    let suggestedCardIdCounter = 1000; // start high to avoid collision with ALL_CARDS ids
-
-    document.getElementById('btn-suggest-card').addEventListener('click', () => {
-      document.getElementById('suggest-card-form').style.display = 'block';
-      document.getElementById('btn-suggest-card').style.display = 'none';
-      document.getElementById('suggest-card-input').focus();
-    });
-
-    document.getElementById('suggest-card-cancel').addEventListener('click', () => {
-      document.getElementById('suggest-card-form').style.display = 'none';
-      document.getElementById('suggest-card-input').value = '';
-      document.getElementById('btn-suggest-card').style.display = 'block';
-    });
-
-    document.getElementById('suggest-card-save').addEventListener('click', addSuggestedCard);
-    document.getElementById('suggest-card-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') addSuggestedCard();
-      if (e.key === 'Escape') {
-        document.getElementById('suggest-card-form').style.display = 'none';
-        document.getElementById('suggest-card-input').value = '';
-        document.getElementById('btn-suggest-card').style.display = 'block';
-      }
-    });
-
-    function addSuggestedCard() {
-      const input = document.getElementById('suggest-card-input');
-      const title = input.value.trim();
-      if (!title) { showToast('Please enter a card title', 'error'); input.focus(); return; }
-
-      const newCard = { id: ++suggestedCardIdCounter, label: title, suggested: true };
-      ALL_CARDS.push(newCard);
-      unsortedCards.push(newCard);
-
-      input.value = '';
-      document.getElementById('suggest-card-form').style.display = 'none';
-      document.getElementById('btn-suggest-card').style.display = 'block';
-
-      renderUnsorted();
-      updateProgress();
-      showToast(`Card "${title}" added!`, 'success');
-    }
-
-    // Categories
-    document.getElementById('btn-add-cat').addEventListener('click', addCategory);
-    document.getElementById('new-cat-input').addEventListener('keydown', e => { if (e.key === 'Enter') addCategory(); });
-
-    function addCategory() {
-      const input = document.getElementById('new-cat-input');
-      const name = input.value.trim() || `Category ${categories.length + 1}`;
-      categories.push({ id: ++catIdCounter, name, cards: [] });
-      input.value = '';
-      input.focus();
-      renderCategories();
-      updateProgress();
-    }
-
-    function renderCategories() {
-      const container = document.getElementById('cat-container');
-
-      if (categories.length === 0) {
-        container.innerHTML = `
-      <div class="cat-empty-state">
-        <div class="emoji">📂</div>
-        <h3>Start by creating categories</h3>
-        <p>Think about how you'd naturally group documentation topics. Name them whatever feels right — there's no wrong answer.</p>
-      </div>`;
-        return;
-      }
-
-      container.innerHTML = '';
-      const grid = document.createElement('div');
-      grid.className = 'cat-grid';
-
-      categories.forEach(cat => {
-        const bucket = document.createElement('div');
-        bucket.className = 'category-bucket';
-        bucket.dataset.catId = cat.id;
-
-        bucket.addEventListener('dragover', e => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'move';
-          bucket.classList.add('drag-over');
-          // Highlight drop position among existing cards
-          const cards = [...bucket.querySelectorAll('.cat-card-item:not(.dragging)')];
-          cards.forEach(c => c.classList.remove('drop-above', 'drop-below'));
-          if (cards.length > 0) {
-            const target = cards.find(c => {
-              const rect = c.getBoundingClientRect();
-              return e.clientY < rect.top + rect.height / 2;
-            });
-            if (target) target.classList.add('drop-above');
-            else cards[cards.length - 1].classList.add('drop-below');
-          }
-        });
-        bucket.addEventListener('dragleave', e => {
-          if (!bucket.contains(e.relatedTarget)) {
-            bucket.classList.remove('drag-over');
-            bucket.querySelectorAll('.cat-card-item').forEach(c => c.classList.remove('drop-above', 'drop-below'));
-          }
-        });
-        bucket.addEventListener('drop', e => {
-          e.preventDefault();
-          bucket.classList.remove('drag-over');
-          bucket.querySelectorAll('.cat-card-item').forEach(c => c.classList.remove('drop-above', 'drop-below'));
-          if (!draggingCardId) return;
-          const card = ALL_CARDS.find(c => c.id === draggingCardId)
-            || categories.flatMap(c => c.cards).find(c => c.id === draggingCardId);
-          if (!card) return;
-
-          // Remove from source
-          unsortedCards = unsortedCards.filter(c => c.id !== draggingCardId);
-          if (draggingFromCat) {
-            const prev = categories.find(c => c.id === draggingFromCat);
-            if (prev) prev.cards = prev.cards.filter(c => c.id !== draggingCardId);
-          }
-
-          // Find insert position using card elements that are NOT the dragging card
-          const cardEls = [...bucket.querySelectorAll('.cat-card-item')].filter(
-            c => parseInt(c.dataset.cardId) !== draggingCardId
-          );
-          const targetEl = cardEls.find(c => {
-            const rect = c.getBoundingClientRect();
-            return e.clientY < rect.top + rect.height / 2;
-          });
-
-          if (targetEl) {
-            const targetId = parseInt(targetEl.dataset.cardId);
-            const targetIdx = cat.cards.findIndex(c => c.id === targetId);
-            if (targetIdx !== -1) cat.cards.splice(targetIdx, 0, card);
-            else cat.cards.push(card);
-          } else {
-            if (!cat.cards.find(c => c.id === draggingCardId)) cat.cards.push(card);
-          }
-
-          draggingCardId = null;
-          draggingFromCat = null;
-          renderUnsorted();
-          renderCategories();
-          updateProgress();
-        });
-
-        const header = document.createElement('div');
-        header.className = 'cat-header';
-
-        const nameBtn = document.createElement('button');
-        nameBtn.className = 'cat-name';
-        nameBtn.textContent = cat.name;
-        nameBtn.title = 'Click to rename';
-        nameBtn.addEventListener('click', () => {
-          nameBtn.style.display = 'none';
-          const editInput = document.createElement('input');
-          editInput.className = 'cat-name-edit';
-          editInput.value = cat.name;
-          header.insertBefore(editInput, delBtn);
-          editInput.focus();
-          editInput.select();
-          const save = () => {
-            const newName = editInput.value.trim();
-            cat.name = newName || cat.name;
-            renderCategories();
-          };
-          editInput.addEventListener('blur', save);
-          editInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); save(); } if (e.key === 'Escape') { renderCategories(); } });
-        });
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'cat-delete';
-        delBtn.innerHTML = '×';
-        delBtn.title = 'Delete category';
-        delBtn.addEventListener('click', () => {
-          cat.cards.forEach(c => { restoreToUnsorted(c); });
-          categories = categories.filter(c => c.id !== cat.id);
-          renderUnsorted();
-          renderCategories();
-          updateProgress();
-        });
-
-        header.appendChild(nameBtn);
-        header.appendChild(delBtn);
-        bucket.appendChild(header);
-
-        const countEl = document.createElement('div');
-        countEl.className = 'cat-count';
-        countEl.textContent = cat.cards.length === 0 ? 'Drop cards here' : `${cat.cards.length} card${cat.cards.length !== 1 ? 's' : ''}`;
-        bucket.appendChild(countEl);
-
-        const cardsDiv = document.createElement('div');
-        cardsDiv.className = 'cat-cards';
-        cat.cards.forEach(card => {
-          const el = document.createElement('div');
-          el.className = 'cat-card-item';
-          el.draggable = true;
-          el.dataset.cardId = card.id;
-          const labelDiv = document.createElement('div');
-          labelDiv.className = 'card-label';
-          labelDiv.textContent = getCardLabel(card);
-          if (isRenamed(card)) {
-            const orig = document.createElement('span');
-            orig.className = 'card-original';
-            orig.textContent = getOriginalLabel(card);
-            labelDiv.appendChild(orig);
-          }
-
-          const btnsDiv = document.createElement('div');
-          btnsDiv.className = 'cat-card-btns';
-
-          if (isRenamed(card)) {
-            const badge = document.createElement('span');
-            badge.className = 'card-renamed-badge';
-            badge.textContent = 'renamed';
-            btnsDiv.appendChild(badge);
-          }
-
-          if (card.suggested) {
-            const sugBadge = document.createElement('span');
-            sugBadge.className = 'card-renamed-badge';
-            sugBadge.style.color = 'var(--success)';
-            sugBadge.style.background = 'rgba(56,161,105,0.12)';
-            sugBadge.textContent = 'suggested';
-            btnsDiv.appendChild(sugBadge);
-          }
-
-          const editBtn = document.createElement('button');
-          editBtn.className = 'card-edit-btn';
-          editBtn.innerHTML = '✏️';
-          editBtn.title = 'Rename this card';
-          editBtn.style.fontSize = '11px';
-          editBtn.addEventListener('click', e => {
-            e.stopPropagation();
-            startCatCardEdit(card, el, cat);
-          });
-
-          const removeBtn = document.createElement('button');
-          removeBtn.className = 'cat-card-remove';
-          removeBtn.innerHTML = '×';
-          removeBtn.addEventListener('click', () => {
-            cat.cards = cat.cards.filter(c => c.id !== card.id);
-            restoreToUnsorted(card);
-            renderUnsorted();
-            renderCategories();
-            updateProgress();
-          });
-
-          btnsDiv.appendChild(editBtn);
-          btnsDiv.appendChild(removeBtn);
-
-          el.addEventListener('dragstart', e => {
-            draggingCardId = card.id;
-            draggingFromCat = cat.id;
-            el.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-          });
-          el.addEventListener('dragend', () => el.classList.remove('dragging'));
-
-          el.appendChild(labelDiv);
-          el.appendChild(btnsDiv);
-          cardsDiv.appendChild(el);
-        });
-        bucket.appendChild(cardsDiv);
-        grid.appendChild(bucket);
-      });
-
-      container.appendChild(grid);
-    }
-
-    function startCatCardEdit(card, el, cat) {
-      const wrap = document.createElement('div');
-      wrap.className = 'card-edit-wrap';
-      wrap.style.fontSize = '12px';
-
-      const input = document.createElement('input');
-      input.className = 'card-edit-input';
-      input.style.fontSize = '12px';
-      input.value = getCardLabel(card);
-      input.placeholder = getOriginalLabel(card);
-
-      const actions = document.createElement('div');
-      actions.className = 'card-edit-actions';
-
-      const saveBtn = document.createElement('button');
-      saveBtn.className = 'card-edit-save';
-      saveBtn.textContent = 'Save';
-
-      const cancelBtn = document.createElement('button');
-      cancelBtn.className = 'card-edit-cancel';
-      cancelBtn.textContent = 'Cancel';
-
-      const resetBtn = document.createElement('button');
-      resetBtn.className = 'card-edit-reset';
-      resetBtn.textContent = 'Reset';
-
-      const doSave = () => {
-        const newLabel = input.value.trim();
-        if (newLabel && newLabel !== card.label) {
-          cardRenames[card.id] = newLabel;
-        } else {
-          delete cardRenames[card.id];
-        }
-        renderUnsorted();
-        renderCategories();
-      };
-
-      const doCancel = () => { renderUnsorted(); renderCategories(); };
-      const doReset = () => { delete cardRenames[card.id]; renderUnsorted(); renderCategories(); };
-
-      saveBtn.addEventListener('click', e => { e.stopPropagation(); doSave(); });
-      cancelBtn.addEventListener('click', e => { e.stopPropagation(); doCancel(); });
-      resetBtn.addEventListener('click', e => { e.stopPropagation(); doReset(); });
-      input.addEventListener('keydown', e => {
-        e.stopPropagation();
-        if (e.key === 'Enter') doSave();
-        if (e.key === 'Escape') doCancel();
-      });
-
-      actions.appendChild(saveBtn);
-      actions.appendChild(cancelBtn);
-      actions.appendChild(resetBtn);
-
-      wrap.appendChild(input);
-      wrap.appendChild(actions);
-
-      el.replaceWith(wrap);
-      input.focus();
-      input.select();
-    }
-
-    function updateProgress() {
-      const sorted = ALL_CARDS.length - unsortedCards.length;
-      const pct = Math.round((sorted / ALL_CARDS.length) * 100);
-      document.getElementById('progress-fill').style.width = pct + '%';
-      document.getElementById('progress-pct').textContent = pct + '%';
-      document.getElementById('topbar-stats').textContent = `${sorted}/${ALL_CARDS.length} sorted · ${categories.length} categor${categories.length !== 1 ? 'ies' : 'y'}`;
-      document.getElementById('btn-review').disabled = sorted === 0;
-    }
-
-    document.getElementById('btn-review').addEventListener('click', () => {
-      showScreen('review-screen');
-      renderReview();
-    });
-
-    // ================================================================
-    // REVIEW
-    // ================================================================
-    document.getElementById('btn-back-sort').addEventListener('click', () => showScreen('sort-screen'));
-
-    function renderReview() {
-      const sorted = ALL_CARDS.length - unsortedCards.length;
-      document.getElementById('review-stats').textContent =
-        `${sorted} of ${ALL_CARDS.length} cards sorted into ${categories.length} categories` +
-        (unsortedCards.length > 0 ? ` · ${unsortedCards.length} unsorted` : '');
-
-      const container = document.getElementById('review-categories');
-      container.innerHTML = '';
-
-      categories.forEach(cat => {
-        const div = document.createElement('div');
-        div.className = 'review-cat';
-        div.innerHTML = `<h3>${esc(cat.name)}</h3>`;
-        const chips = document.createElement('div');
-        chips.className = 'review-cat-cards';
-        if (cat.cards.length === 0) {
-          chips.innerHTML = '<span style="color:var(--text2);font-size:12px;font-style:italic">Empty category</span>';
-        } else {
-          cat.cards.forEach(c => {
-            const chip = document.createElement('span');
-            chip.className = 'review-chip';
-            chip.textContent = getCardLabel(c);
-            if (isRenamed(c)) {
-              chip.style.borderColor = 'var(--accent)';
-              chip.title = 'Original: ' + getOriginalLabel(c);
-              const orig = document.createElement('span');
-              orig.style.cssText = 'display:block;font-size:10px;color:var(--text3);text-decoration:line-through;margin-top:2px';
-              orig.textContent = getOriginalLabel(c);
-              chip.appendChild(orig);
-            }
-            chips.appendChild(chip);
-          });
-        }
-        div.appendChild(chips);
-        container.appendChild(div);
-      });
-
-      if (unsortedCards.length > 0) {
-        const div = document.createElement('div');
-        div.className = 'review-cat unsorted';
-        div.innerHTML = `<h3>Unsorted cards (${unsortedCards.length})</h3>`;
-        const chips = document.createElement('div');
-        chips.className = 'review-cat-cards';
-        unsortedCards.forEach(c => {
-          const chip = document.createElement('span');
-          chip.className = 'review-chip';
-          chip.textContent = getCardLabel(c);
-          if (isRenamed(c)) {
-            chip.style.borderColor = 'var(--accent)';
-            const orig = document.createElement('span');
-            orig.style.cssText = 'display:block;font-size:10px;color:var(--text3);text-decoration:line-through;margin-top:2px';
-            orig.textContent = getOriginalLabel(c);
-            chip.appendChild(orig);
-          }
-          chips.appendChild(chip);
-        });
-        div.appendChild(chips);
-        container.appendChild(div);
-      }
-    }
-
-    // ================================================================
-    // SUBMIT — sends to Google Sheets + localStorage
-    // ================================================================
-    document.getElementById('btn-submit').addEventListener('click', submitSort);
-
-    async function submitSort() {
-      const btn = document.getElementById('btn-submit');
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>Submitting...';
-
-      const payload = {
-        email: userEmail,
-        timestamp: new Date().toISOString(),
-        feedback: document.getElementById('feedback-input').value.trim(),
-        categories: categories.map(c => ({
-          name: c.name,
-          cards: c.cards.map(card => ({
-            original: card.label,
-            label: getCardLabel(card),
-            renamed: isRenamed(card),
-            suggested: card.suggested || false,
-          })),
-        })),
-        unsortedCards: unsortedCards.map(c => ({
-          original: c.label,
-          label: getCardLabel(c),
-          renamed: isRenamed(c),
-          suggested: c.suggested || false,
-        })),
-        renames: Object.entries(cardRenames).map(([id, newLabel]) => {
-          const card = ALL_CARDS.find(c => c.id === parseInt(id));
-          return { originalLabel: card ? card.label : 'unknown', newLabel };
-        }),
-        totalSorted: ALL_CARDS.length - unsortedCards.length,
-        totalCards: ALL_CARDS.length,
-        totalRenamed: Object.keys(cardRenames).length,
-      };
-
-      // Save to localStorage as backup
-      try {
-        const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        existing.push(payload);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-      } catch (e) { }
-
-      // Send to Google Sheets
-      let sheetSuccess = false;
-      if (GOOGLE_SHEETS_WEBHOOK_URL && GOOGLE_SHEETS_WEBHOOK_URL !== "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
-        try {
-          const resp = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-          });
-          sheetSuccess = true;
-        } catch (err) {
-          console.error('Google Sheets webhook error:', err);
-        }
-      }
-
-      showScreen('done-screen');
-    }
-
-    // ================================================================
-    // ADMIN PANEL — yoursite.com/#admin
-    // ================================================================
-    window.addEventListener('hashchange', () => {
-      if (window.location.hash === '#admin') {
-        showScreen('admin-screen');
-        renderAdmin();
-      } else if (!window.location.hash || window.location.hash === '#') {
-        showScreen('intro-screen');
-      }
-    });
-
-    function renderAdmin() {
-      const wrap = document.getElementById('admin-content');
-
-      if (!sessionStorage.getItem('admin_auth')) {
-        wrap.innerHTML = `
-      <div class="admin-login-box">
-        <h3>Admin Access</h3>
-        <p style="color:var(--text2);font-size:13px;margin-bottom:20px;font-family:var(--font-mono)">
-          View submissions collected on this browser's localStorage. For all submissions, check your Google Sheet.
-        </p>
-        <input type="password" class="admin-pass-input" id="admin-pass" placeholder="Enter admin password" />
-        <button class="btn-primary" id="admin-login-btn" style="width:100%">Log in</button>
-      </div>`;
-        document.getElementById('admin-login-btn').addEventListener('click', adminLogin);
-        document.getElementById('admin-pass').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
-        return;
-      }
-
-      const submissions = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      renderAdminDashboard(submissions);
-    }
-
-    function adminLogin() {
-      if (document.getElementById('admin-pass').value === ADMIN_PASSWORD) {
-        sessionStorage.setItem('admin_auth', 'true');
-        renderAdmin();
-      } else {
-        showToast('Incorrect password', 'error');
-      }
-    }
-
-    function renderAdminDashboard(submissions) {
-      const wrap = document.getElementById('admin-content');
-      const totalCats = submissions.reduce((a, s) => a + s.categories.length, 0);
-      const avgCats = submissions.length ? (totalCats / submissions.length).toFixed(1) : 0;
-      const avgSorted = submissions.length ? (submissions.reduce((a, s) => a + s.totalSorted, 0) / submissions.length).toFixed(0) : 0;
-
-      const catNames = {};
-      submissions.forEach(s => s.categories.forEach(c => {
-        const key = c.name.toLowerCase().trim();
-        catNames[key] = (catNames[key] || 0) + 1;
-      }));
-      const topCats = Object.entries(catNames).sort((a, b) => b[1] - a[1]).slice(0, 12);
-
-      let html = `
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px">
-      <div>
-        <h2 class="admin-title">Card Sort Results</h2>
-        <p class="admin-sub">${submissions.length} submission${submissions.length !== 1 ? 's' : ''} in local storage · Check Google Sheet for complete data</p>
-      </div>
-      <button class="btn-back" onclick="window.location.hash='';showScreen('intro-screen')">← Back to exercise</button>
-    </div>
-
+  });
+
+  const payload={
+    email,
+    timestamp:new Date().toISOString(),
+    confidence,
+    feedback:document.getElementById('feedback').value.trim(),
+    totalCards:CARDS.length,
+    totalSorted:CARDS.length-unsorted.length,
+    placements,
+    categories:STRUCTURE.map(p=>({
+      name:p.name,
+      subsections:p.subs.map(s=>({
+        name:s.name, cards:buckets[s.id].map(c=>c.label)
+      }))
+    })),
+    unsortedCards:unsorted.map(c=>c.label),
+  };
+
+  try{const x=JSON.parse(localStorage.getItem(SK)||'[]');x.push(payload);localStorage.setItem(SK,JSON.stringify(x))}catch(e){}
+  if(WEBHOOK&&WEBHOOK!=="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"){
+    try{await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}
+  }
+  show('done');
+}
+
+// ════════════════════════════════════════════════════════
+// ADMIN (#admin)
+// ════════════════════════════════════════════════════════
+window.addEventListener('hashchange',()=>{if(location.hash==='#admin'){show('admin');renderAdmin()}else if(!location.hash||location.hash==='#')show('intro')});
+if(location.hash==='#admin'){show('admin');renderAdmin()}
+
+function renderAdmin(){
+  const w=document.getElementById('admin-content');
+  if(!sessionStorage.getItem('adm')){
+    w.innerHTML=`<div class="admin-login"><h3>Admin</h3><input type="password" class="field" id="adm-pw" placeholder="Password" style="width:100%;margin-bottom:12px"/><button class="btn btn-fp" id="adm-btn" style="width:100%">Log in</button></div>`;
+    document.getElementById('adm-btn').onclick=()=>{if(document.getElementById('adm-pw').value===ADMIN_PW){sessionStorage.setItem('adm','1');renderAdmin()}else toast('Wrong password','err')};
+    document.getElementById('adm-pw').onkeydown=e=>{if(e.key==='Enter')document.getElementById('adm-btn').click()};return;
+  }
+  const subs=JSON.parse(localStorage.getItem(SK)||'[]');
+  const avgConf=subs.filter(s=>s.confidence).length?(subs.reduce((a,s)=>a+(s.confidence||0),0)/subs.filter(s=>s.confidence).length).toFixed(1):'—';
+  const avgSorted=subs.length?(subs.reduce((a,s)=>a+s.totalSorted,0)/subs.length).toFixed(0):'—';
+
+  let html=`<button class="btn btn-ghost" onclick="location.hash='';show('intro')" style="margin-bottom:16px">← Back</button>
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:4px">Card Sort Results</h2>
+    <p style="font:400 13px var(--mono);color:var(--t2);margin-bottom:20px">${subs.length} submissions</p>
     <div class="stat-row">
-      <div class="stat-box"><div class="stat-value">${submissions.length}</div><div class="stat-label">Submissions</div></div>
-      <div class="stat-box"><div class="stat-value">${avgCats}</div><div class="stat-label">Avg categories</div></div>
-      <div class="stat-box"><div class="stat-value">${avgSorted}</div><div class="stat-label">Avg cards sorted</div></div>
-      <div class="stat-box"><div class="stat-value">${Object.keys(catNames).length}</div><div class="stat-label">Unique cat names</div></div>
+      <div class="stat-box"><div class="stat-v">${subs.length}</div><div class="stat-l">Submissions</div></div>
+      <div class="stat-box"><div class="stat-v">${avgConf}</div><div class="stat-l">Avg confidence</div></div>
+      <div class="stat-box"><div class="stat-v">${avgSorted}</div><div class="stat-l">Avg sorted</div></div>
     </div>
-
-    ${topCats.length > 0 ? `
-    <div class="card-box" style="margin-bottom:24px">
-      <h3 style="margin-bottom:12px">Most common category names</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:6px">
-        ${topCats.map(([n, c]) => `<span class="review-chip" style="color:var(--accent)">${esc(n)} <span style="color:var(--text2)">(${c})</span></span>`).join('')}
-      </div>
-    </div>` : ''}
-
-    <div class="admin-actions">
-      <button class="btn-secondary" id="btn-export-json">Export JSON</button>
-      <button class="btn-secondary" id="btn-export-csv">Export CSV</button>
-      <button class="btn-secondary" id="btn-clear" style="color:var(--danger);border-color:var(--danger)">Clear local data</button>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="exp-json">Export JSON</button>
+      <button class="btn btn-ghost" id="exp-csv">Export CSV</button>
+      <button class="btn btn-ghost" id="btn-clear" style="color:var(--err);border-color:var(--err)">Clear</button>
     </div>`;
-
-      if (submissions.length === 0) {
-        html += '<div class="no-submissions">No local submissions yet. Submissions are primarily stored in your Google Sheet.</div>';
-      } else {
-        submissions.slice().reverse().forEach(s => {
-          html += `
-        <div class="submission-card">
-          <div class="submission-header">
-            <span class="submission-email">${esc(s.email)}</span>
-            <span class="submission-time">${new Date(s.timestamp).toLocaleString()} · ${s.totalSorted}/${s.totalCards} sorted</span>
-          </div>
-          ${s.categories.map(c => `
-            <div class="submission-cat">
-              <div class="submission-cat-name">${esc(c.name)} (${c.cards.length})</div>
-              <div class="submission-cat-cards">${c.cards.map(card => `<span class="submission-chip">${esc(card)}</span>`).join('')}</div>
-            </div>`).join('')}
-          ${s.unsortedCards?.length > 0 ? `
-            <div class="submission-cat" style="opacity:0.5">
-              <div class="submission-cat-name" style="color:var(--text2)">Unsorted (${s.unsortedCards.length})</div>
-              <div class="submission-cat-cards">${s.unsortedCards.map(card => `<span class="submission-chip">${esc(card)}</span>`).join('')}</div>
-            </div>` : ''}
-          ${s.feedback ? `<div class="submission-feedback">"${esc(s.feedback)}"</div>` : ''}
-        </div>`;
-        });
-      }
-
-      wrap.innerHTML = html;
-
-      document.getElementById('btn-export-json').addEventListener('click', () => {
-        dl('fastpix-card-sort.json', JSON.stringify(submissions, null, 2), 'application/json');
-        showToast('JSON exported', 'success');
-      });
-      document.getElementById('btn-export-csv').addEventListener('click', () => {
-        const rows = [['Email', 'Timestamp', 'Category', 'Cards', 'Cards Count', 'Total Sorted', 'Feedback']];
-        submissions.forEach(s => {
-          s.categories.forEach(c => rows.push([s.email, s.timestamp, c.name, c.cards.join(' | '), c.cards.length, s.totalSorted, s.feedback || '']));
-          if (s.unsortedCards?.length) rows.push([s.email, s.timestamp, '[Unsorted]', s.unsortedCards.join(' | '), s.unsortedCards.length, s.totalSorted, s.feedback || '']);
-        });
-        dl('fastpix-card-sort.csv', rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n'), 'text/csv');
-        showToast('CSV exported', 'success');
-      });
-      document.getElementById('btn-clear').addEventListener('click', () => {
-        if (confirm('Clear all local submission data? Google Sheet data is unaffected.')) {
-          localStorage.removeItem(STORAGE_KEY);
-          renderAdmin();
-          showToast('Local data cleared', 'info');
-        }
-      });
-    }
-
-    // ================================================================
-    // UTILITIES
-    // ================================================================
-    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-    function dl(name, content, type) {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([content], { type }));
-      a.download = name; a.click(); URL.revokeObjectURL(a.href);
-    }
-  </script>
+  if(!subs.length){html+='<div class="empty-msg">No submissions yet.</div>'}
+  else subs.slice().reverse().forEach(s=>{
+    html+=`<div class="sub-card-admin"><div class="sub-head-admin"><span class="sub-email">${esc(s.email)}</span><span class="sub-time">${new Date(s.timestamp).toLocaleString()}</span></div>
+    <div class="sub-detail">Sorted: ${s.totalSorted}/${s.totalCards} · Confidence: ${s.confidence||'—'}/5</div>
+    ${(s.categories||[]).map(cat=>`<div class="sub-detail" style="margin-top:4px"><strong style="color:var(--fp)">${esc(cat.name)}</strong>: ${cat.subsections.map(sub=>`<em>${esc(sub.name)}</em> (${sub.cards.length})`).join(', ')}</div>`).join('')}
+    ${s.feedback?`<div class="sub-fb">"${esc(s.feedback)}"</div>`:''}
+    </div>`;
+  });
+  w.innerHTML=html;
+  document.getElementById('exp-json').onclick=()=>{dl('fastpix-cardsort.json',JSON.stringify(subs,null,2),'application/json');toast('Exported','ok')};
+  document.getElementById('exp-csv').onclick=()=>{
+    const rows=[['Email','Timestamp','Confidence','Card','Parent Category','Subsection']];
+    subs.forEach(s=>(s.placements||[]).forEach(p=>rows.push([s.email,s.timestamp,s.confidence||'',p.card,p.parent,p.subsection])));
+    subs.forEach(s=>(s.unsortedCards||[]).forEach(c=>rows.push([s.email,s.timestamp,s.confidence||'',c,'[Unsorted]','[Unsorted]'])));
+    dl('fastpix-cardsort.csv',rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),'text/csv');toast('Exported','ok');
+  };
+  document.getElementById('btn-clear').onclick=()=>{if(confirm('Clear all local data?')){localStorage.removeItem(SK);renderAdmin();toast('Cleared')}};
+}
+</script>
 </body>
-
 </html>
