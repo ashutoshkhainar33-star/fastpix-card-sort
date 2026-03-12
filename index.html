@@ -88,6 +88,9 @@ h1 em{font-style:normal;color:var(--fp)}
 .sub-card .remove{background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:0 2px;line-height:1;margin-left:auto;flex-shrink:0;border-radius:3px;transition:.1s}
 .sub-card .remove:hover{color:var(--err);background:rgba(239,68,68,.1)}
 .sub-drop{padding:10px;text-align:center;color:var(--t3);font:400 10px var(--mono);border:1.5px dashed var(--b1);border-radius:var(--r1);margin:4px 8px 8px}
+.sub-card.drag-above{border-top:2px solid var(--fp);margin-top:-1px}
+.sub-card.drag-below{border-bottom:2px solid var(--fp);margin-bottom:-1px}
+.sub-cards.drag-empty-target{background:var(--fp-glow);border-radius:var(--r1);min-height:36px}
 
 #review{flex-direction:column;min-height:100vh;padding:24px}
 .review-w{max-width:760px;margin:0 auto;width:100%}
@@ -150,8 +153,9 @@ textarea.fb-area:focus{border-color:var(--fp)}
     <p class="step"><b>1.</b> ~100 guide titles appear as draggable cards (shuffled randomly).</p>
     <p class="step"><b>2.</b> On the right are categories with subsections — like a docs sidebar.</p>
     <p class="step"><b>3.</b> Drag each card into the subsection where you'd expect to find it.</p>
-    <p class="step"><b>4.</b> Cards you can't place go in the yellow "Not sure" bucket at the bottom.</p>
-    <p class="step"><b>5.</b> Review, rate confidence, tell us what was hard. Takes ~10 min.</p>
+    <p class="step"><b>4.</b> Reorder cards within each subsection — drag them up or down to set the reading order you'd prefer.</p>
+    <p class="step"><b>5.</b> Cards you can't place go in the yellow "Not sure" bucket at the bottom.</p>
+    <p class="step"><b>6.</b> Review, rate confidence, tell us what was hard. Takes ~10 min.</p>
   </div>
   <div class="box">
     <label style="font:600 13px var(--font);display:block;margin-bottom:8px">Enter your email to begin</label>
@@ -453,16 +457,49 @@ function renderCats(){
       const cards=buckets[sub.id];
       bucket.innerHTML=`<div class="sub-head"><span class="sub-name">${esc(sub.name)}</span><span class="sub-count">${cards.length}</span></div>`;
       const cardsDiv=document.createElement('div');cardsDiv.className='sub-cards';
-      cards.forEach(card=>{
+      cards.forEach((card,idx)=>{
         const el=document.createElement('div');el.className='sub-card';el.draggable=true;
-        el.innerHTML=`<span>${esc(card.label)}</span><button class="remove" title="Remove">×</button>`;
+        el.dataset.cardId=card.id;el.dataset.idx=idx;el.dataset.sub=sub.id;
+        el.innerHTML=`<span class="grip" style="cursor:grab;color:var(--t3);font-size:9px;flex-shrink:0">⠿</span><span>${esc(card.label)}</span><button class="remove" title="Remove">×</button>`;
         el.querySelector('.remove').onclick=()=>{buckets[sub.id]=buckets[sub.id].filter(c=>c.id!==card.id);unsorted.push(card);renderAll()};
         el.addEventListener('dragstart',e=>{dragId=card.id;dragFrom=sub.id;el.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
-        el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+        el.addEventListener('dragend',()=>{el.classList.remove('dragging');clearDropIndicators()});
+        // Per-card dragover for reorder position
+        el.addEventListener('dragover',e=>{
+          e.preventDefault();e.stopPropagation();e.dataTransfer.dropEffect='move';
+          bucket.classList.add('drag-over');
+          clearDropIndicators();
+          const rect=el.getBoundingClientRect();
+          const midY=rect.top+rect.height/2;
+          if(e.clientY<midY){el.classList.add('drag-above')}
+          else{el.classList.add('drag-below')}
+        });
+        el.addEventListener('dragleave',()=>{el.classList.remove('drag-above');el.classList.remove('drag-below')});
+        // Per-card drop for precise positioning
+        el.addEventListener('drop',e=>{
+          e.preventDefault();e.stopPropagation();
+          bucket.classList.remove('drag-over');clearDropIndicators();
+          if(!dragId)return;
+          const droppedCard=CARDS.find(c=>c.id===dragId);if(!droppedCard)return;
+          // Remove from source
+          unsorted=unsorted.filter(c=>c.id!==dragId);
+          if(dragFrom)buckets[dragFrom]=buckets[dragFrom].filter(c=>c.id!==dragId);
+          // Determine insert position
+          const rect=el.getBoundingClientRect();
+          const midY=rect.top+rect.height/2;
+          let targetArr=buckets[sub.id];
+          // Find current index of the target card after removal
+          let targetIdx=targetArr.findIndex(c=>c.id===card.id);
+          if(e.clientY>=midY)targetIdx++;
+          // Insert at position
+          if(!targetArr.find(c=>c.id===dragId)){targetArr.splice(targetIdx,0,droppedCard)}
+          dragId=null;dragFrom=null;renderAll();
+        });
         cardsDiv.appendChild(el);
       });
       if(!cards.length)cardsDiv.innerHTML='<div class="sub-drop">Drop guides here</div>';
       bucket.appendChild(cardsDiv);
+      // Bucket-level drop (for empty buckets or dropping at the end)
       bucket.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move';bucket.classList.add('drag-over')});
       bucket.addEventListener('dragleave',e=>{if(!bucket.contains(e.relatedTarget))bucket.classList.remove('drag-over')});
       bucket.addEventListener('drop',e=>{
@@ -478,6 +515,8 @@ function renderCats(){
     group.appendChild(grid);panel.appendChild(group);
   });
 }
+
+function clearDropIndicators(){document.querySelectorAll('.drag-above,.drag-below').forEach(el=>{el.classList.remove('drag-above');el.classList.remove('drag-below')})}
 
 const up=document.getElementById('unsorted-panel');
 up.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='move'});
@@ -537,7 +576,7 @@ document.getElementById('btn-submit').onclick=submitSort;
 async function submitSort(){
   const btn=document.getElementById('btn-submit');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Submitting…';
   const placements=[];
-  STRUCTURE.forEach(parent=>{parent.subs.forEach(sub=>{buckets[sub.id].forEach(card=>{placements.push({card:card.label,parent:parent.name,subsection:sub.name,isUnsure:!!sub.isUnsure})})})});
+  STRUCTURE.forEach(parent=>{parent.subs.forEach(sub=>{buckets[sub.id].forEach((card,idx)=>{placements.push({card:card.label,parent:parent.name,subsection:sub.name,position:idx+1,isUnsure:!!sub.isUnsure})})})});
   const payload={email,timestamp:new Date().toISOString(),confidence,feedback:document.getElementById('feedback').value.trim(),totalCards:CARDS.length,totalSorted:CARDS.length-unsorted.length,
     notSureCount:buckets['unsure.bucket']?buckets['unsure.bucket'].length:0,
     placements,
@@ -583,9 +622,9 @@ function renderAdmin(){
   w.innerHTML=html;
   document.getElementById('exp-json').onclick=()=>{dl('fastpix-cardsort.json',JSON.stringify(subs,null,2),'application/json');toast('Exported','ok')};
   document.getElementById('exp-csv').onclick=()=>{
-    const rows=[['Email','Timestamp','Confidence','Card','Parent Category','Subsection','Is Not Sure']];
-    subs.forEach(s=>(s.placements||[]).forEach(p=>rows.push([s.email,s.timestamp,s.confidence||'',p.card,p.parent,p.subsection,p.isUnsure?'Yes':'No'])));
-    subs.forEach(s=>(s.unsortedCards||[]).forEach(c=>rows.push([s.email,s.timestamp,s.confidence||'',c,'[Unsorted]','[Unsorted]',''])));
+    const rows=[['Email','Timestamp','Confidence','Card','Parent Category','Subsection','Position','Is Not Sure']];
+    subs.forEach(s=>(s.placements||[]).forEach(p=>rows.push([s.email,s.timestamp,s.confidence||'',p.card,p.parent,p.subsection,p.position||'',p.isUnsure?'Yes':'No'])));
+    subs.forEach(s=>(s.unsortedCards||[]).forEach(c=>rows.push([s.email,s.timestamp,s.confidence||'',c,'[Unsorted]','[Unsorted]','',''])));
     dl('fastpix-cardsort.csv',rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),'text/csv');toast('Exported','ok');
   };
   document.getElementById('btn-clear').onclick=()=>{if(confirm('Clear?')){localStorage.removeItem(SK);renderAdmin();toast('Cleared')}};
