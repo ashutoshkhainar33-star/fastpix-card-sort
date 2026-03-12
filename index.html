@@ -204,16 +204,7 @@ textarea.fb-area:focus{border-color:var(--fp)}
 </div>
 
 <div id="done" class="screen">
-<div style="max-width:800px;margin:0 auto;width:100%;padding:24px">
-  <div style="text-align:center;margin-bottom:24px">
-    <div class="done-ico" style="margin:0 auto 16px">✓</div>
-    <h1 class="done-h">Thank you!</h1>
-    <p class="done-p" style="margin-bottom:20px">Your card sort has been submitted. Here's a visual summary of your sort — download it to share with the team.</p>
-    <button class="btn btn-fp" id="btn-download" style="padding:12px 28px;font-size:14px">⬇ Download as image</button>
-  </div>
-  <canvas id="summary-canvas" style="display:none"></canvas>
-  <div id="summary-preview" style="border:1px solid var(--b1);border-radius:var(--r3);overflow:hidden;margin-top:20px"></div>
-</div>
+<div class="done-w"><div class="done-ico">✓</div><h1 class="done-h">Thank you!</h1><p class="done-p">Your card sort has been submitted. Your input will directly shape how we reorganize FastPix documentation.</p></div>
 </div>
 
 <div id="admin" class="screen"><div class="admin-w" id="admin-content"></div></div>
@@ -224,60 +215,62 @@ const ADMIN_PW="Ashu@fp_2025";
 const SK="fp_closed_sort_v3";
 
 /*
- STRUCTURE DESIGN NOTES:
- - Every card maps to exactly one obvious subsection
- - "Upload SDK for Android/iOS" → VOD > Upload & Process (they're upload-specific SDKs)
- - "Integrate video data with player" → Video Player > Player Setup & Integrations (it's a player guide)
- - "Playback DRM content" / "Secure video playback (signed URLs)" → Video Player > Secure Playback in Player (player-side security)
- - "Enable DRM protection" / "Generate JWTs" → Security > DRM / Security > JWT (server-side security)
- - "Add auto-generated subtitles" → VOD > AI-Powered Features (it's applied to VOD assets)
- - "Enable live captions" → Live Streaming > Live Enhancements (it's a live-specific feature)
- - "Troubleshoot playback errors" → Video Data > Debugging & Error Tracking
- - Webhook/event guides stay in Getting Started > Webhooks (they're cross-product platform config)
- - "Not sure" bucket catches genuinely ambiguous cards
+ STRUCTURE updated from Restructured_Information_Architecture.docx:
+ - "Getting Started & Platform" → "Get Started"
+ - "Video on Demand" → "On-Demand Video"
+ - "Input and playback" split → "Upload videos" + "Playback and delivery"
+ - "Transform (basics/advanced)" flattened → "Edit videos"
+ - "Transform (In-video AI)" → "In-video AI"
+ - "Manage" → "Manage streams", "Transform" (live) → "Stream features"
+ - "Input & stream" → "Broadcast"
+ - "Security & Access Control" → "Secure Your Content"
+ - Player subsections renamed to match IA doc
+ - "Video Data & Analytics" → "Video Data"
+ - "Install Monitoring SDKs" → "Monitor players"
+ - "Debugging & Error Tracking" merged into "Custom data and debugging"
+ - Cloud Playout subsections merged into "Content & channels"
+ - All card labels updated: action-first imperatives, no gerunds, no "with FastPix"
 */
 
 const STRUCTURE = [
-  { id:"platform", icon:"🚀", name:"Getting Started & Platform", subs:[
-    { id:"platform.setup", name:"Account & Workspace Setup" },
-    { id:"platform.webhooks", name:"Webhooks & Event Types" },
+  { id:"platform", icon:"🚀", name:"Get Started", subs:[
+    { id:"platform.setup", name:"Account & workspace" },
+    { id:"platform.webhooks", name:"Webhooks & events" },
     { id:"platform.sdks", name:"Language SDKs" },
   ]},
-  { id:"vod", icon:"🎬", name:"Video on Demand", subs:[
-    { id:"vod.upload", name:"Upload & Process Videos" },
-    { id:"vod.play", name:"Play & Deliver Videos" },
-    { id:"vod.edit", name:"Edit & Transform Videos" },
-    { id:"vod.ai", name:"AI-Powered Features" },
+  { id:"vod", icon:"🎬", name:"On-Demand Video", subs:[
+    { id:"vod.upload", name:"Upload videos" },
+    { id:"vod.play", name:"Playback and delivery" },
+    { id:"vod.edit", name:"Edit videos" },
+    { id:"vod.ai", name:"In-video AI" },
   ]},
   { id:"live", icon:"📡", name:"Live Streaming", subs:[
-    { id:"live.go", name:"Go Live (Protocols & Encoders)" },
-    { id:"live.manage", name:"Stream Management & Health" },
-    { id:"live.enhance", name:"Live Enhancements (Captions, Clips, DVR)" },
+    { id:"live.go", name:"Broadcast" },
+    { id:"live.manage", name:"Manage streams" },
+    { id:"live.enhance", name:"Stream features" },
   ]},
-  { id:"security", icon:"🔐", name:"Security & Access Control", subs:[
-    { id:"security.jwt", name:"JWT Signed Access" },
-    { id:"security.drm", name:"DRM Content Protection" },
+  { id:"security", icon:"🔐", name:"Secure Your Content", subs:[
+    { id:"security.jwt", name:"Signed access (JWT)" },
+    { id:"security.drm", name:"DRM protection" },
   ]},
   { id:"player", icon:"▶️", name:"Video Player", subs:[
-    { id:"player.setup", name:"Player Setup & Integrations" },
-    { id:"player.look", name:"Customize Look & Feel" },
-    { id:"player.behavior", name:"Customize Playback Behavior" },
-    { id:"player.secure", name:"Secure Playback in Player" },
-    { id:"player.features", name:"Player Features (Chromecast, Shoppable, Shortcuts)" },
-    { id:"player.mobile", name:"Mobile & Cross-Platform Players" },
+    { id:"player.setup", name:"Player for Web" },
+    { id:"player.look", name:"Customize player interface" },
+    { id:"player.behavior", name:"Customize playback" },
+    { id:"player.secure", name:"Advanced player operations" },
+    { id:"player.features", name:"Player features" },
+    { id:"player.mobile", name:"Native players" },
   ]},
-  { id:"data", icon:"📊", name:"Video Data & Analytics", subs:[
-    { id:"data.sdks", name:"Install Monitoring SDKs" },
-    { id:"data.metrics", name:"Understand Metrics" },
-    { id:"data.dash", name:"Dashboard & Custom Workflows" },
-    { id:"data.debug", name:"Debugging & Error Tracking" },
+  { id:"data", icon:"📊", name:"Video Data", subs:[
+    { id:"data.sdks", name:"Monitor players" },
+    { id:"data.metrics", name:"Metrics reference" },
+    { id:"data.dash", name:"Custom data and debugging" },
   ]},
   { id:"playout", icon:"☁️", name:"Cloud Playout", subs:[
-    { id:"playout.setup", name:"Import & Organize Content" },
-    { id:"playout.channels", name:"Program & Manage Channels" },
+    { id:"playout.setup", name:"Content & channels" },
   ]},
   { id:"unsure", icon:"❓", name:"Not Sure Where This Belongs", subs:[
-    { id:"unsure.bucket", name:"Cards that don't fit anywhere above", isUnsure:true },
+    { id:"unsure.bucket", name:"Cards that don\'t fit anywhere above", isUnsure:true },
   ]},
 ];
 
@@ -285,9 +278,9 @@ const ALL_SUBS=[];
 STRUCTURE.forEach(p=>p.subs.forEach(s=>ALL_SUBS.push(s.id)));
 
 const CARDS = [
-  {id:1, label:"Activate your FastPix account"},
+  {id:1, label:"Activate your account"},
   {id:2, label:"Set up workspace"},
-  {id:3, label:"Setup webhooks"},
+  {id:3, label:"Set up webhooks"},
   {id:4, label:"Webhooks collection"},
   {id:5, label:"Media events"},
   {id:6, label:"Transform media events"},
@@ -304,34 +297,34 @@ const CARDS = [
   {id:17, label:"Upload videos from URL"},
   {id:18, label:"Upload 4K videos"},
   {id:19, label:"Optimize for faster processing"},
-  {id:20, label:"Resumable uploads SDK for Web"},
-  {id:21, label:"Upload SDK for Android"},
-  {id:22, label:"Upload SDK for iOS"},
-  {id:23, label:"Upload SDK for Flutter"},
+  {id:20, label:"Resumable uploads (Web)"},
+  {id:21, label:"Resumable uploads (Android)"},
+  {id:22, label:"Resumable uploads (iOS)"},
+  {id:23, label:"Resumable uploads (Flutter)"},
   {id:24, label:"Play your videos"},
   {id:25, label:"Embed your video"},
-  {id:26, label:"Create and manage playlist"},
-  {id:27, label:"Use different media quality levels"},
+  {id:26, label:"Create and manage playlists"},
+  {id:27, label:"Use media quality levels"},
   {id:28, label:"Add metadata to videos"},
-  {id:29, label:"Add watermark to videos"},
-  {id:30, label:"Create thumbnails from video"},
-  {id:31, label:"Create GIFs from videos"},
-  {id:32, label:"Create clips from existing media"},
-  {id:33, label:"Add timeline hovers"},
-  {id:34, label:"Add own subtitle tracks"},
-  {id:35, label:"Add own audio tracks"},
-  {id:36, label:"Optimize audio loudness"},
+  {id:29, label:"Add watermarks"},
+  {id:30, label:"Create thumbnails"},
+  {id:31, label:"Create GIF previews"},
+  {id:32, label:"Create video clips"},
+  {id:33, label:"Add timeline hover previews"},
+  {id:34, label:"Add subtitle tracks"},
+  {id:35, label:"Add audio tracks"},
+  {id:36, label:"Normalize audio loudness"},
   {id:37, label:"Add auto-generated subtitles"},
   {id:38, label:"Add intro and outro"},
-  {id:39, label:"Remove unwanted parts"},
-  {id:40, label:"Replace existing audio"},
-  {id:41, label:"Overlay audio at specific timeline"},
-  {id:42, label:"MP4 support for offline viewing"},
-  {id:43, label:"Stitch multiple videos into one"},
-  {id:44, label:"Moderate NSFW & Profanity"},
-  {id:45, label:"Categorize into named entities"},
+  {id:39, label:"Remove unwanted segments"},
+  {id:40, label:"Replace audio track"},
+  {id:41, label:"Overlay audio on timeline"},
+  {id:42, label:"Use MP4 for offline viewing"},
+  {id:43, label:"Stitch videos together"},
+  {id:44, label:"Moderate NSFW and profanity"},
+  {id:45, label:"Extract named entities"},
   {id:46, label:"Generate video chapters"},
-  {id:47, label:"Generate video summary"},
+  {id:47, label:"Generate video summaries"},
   {id:48, label:"Generate JWTs for secure media"},
   {id:49, label:"Secure media access with JWTs"},
   {id:50, label:"Restrict playback access"},
@@ -339,25 +332,25 @@ const CARDS = [
   {id:52, label:"Enable DRM protection"},
   {id:53, label:"Stream with RTMPS"},
   {id:54, label:"Stream with SRT"},
-  {id:55, label:"Broadcast using OBS"},
-  {id:56, label:"Mobile live stream with FastPix"},
-  {id:57, label:"Stream using vMix"},
-  {id:58, label:"Stream pre-recorded live"},
+  {id:55, label:"Broadcast with OBS"},
+  {id:56, label:"Broadcast from mobile"},
+  {id:57, label:"Broadcast with vMix"},
+  {id:58, label:"Stream pre-recorded content"},
   {id:59, label:"Manage live streams"},
   {id:60, label:"Handle disconnects"},
-  {id:61, label:"Webhooks in live stream"},
-  {id:62, label:"Live stream health stats"},
-  {id:63, label:"Add metadata to livestream"},
+  {id:61, label:"Live stream webhooks"},
+  {id:62, label:"Monitor stream health"},
+  {id:63, label:"Add metadata to livestreams"},
   {id:64, label:"Enable live captions"},
-  {id:65, label:"Instant live clipping"},
-  {id:66, label:"Simulcast to social platforms"},
-  {id:67, label:"Stream recordings of live streams"},
-  {id:68, label:"DVR-like time shifting"},
+  {id:65, label:"Create instant live clips"},
+  {id:66, label:"Simulcast to platforms"},
+  {id:67, label:"Record live streams"},
+  {id:68, label:"Enable DVR time-shifting"},
   {id:69, label:"Install FastPix player"},
-  {id:70, label:"Playback uploaded videos"},
-  {id:71, label:"Integrate video data with player"},
+  {id:70, label:"Play uploaded videos"},
+  {id:71, label:"Integrate Video Data"},
   {id:72, label:"Handle player errors"},
-  {id:73, label:"Adjust player layout and UI"},
+  {id:73, label:"Customize player interface"},
   {id:74, label:"Set branding color"},
   {id:75, label:"Show or hide controls"},
   {id:76, label:"Set aspect ratio"},
@@ -368,22 +361,22 @@ const CARDS = [
   {id:81, label:"Set volume preference"},
   {id:82, label:"Control playback resolution"},
   {id:83, label:"Set playback start point"},
-  {id:84, label:"Change seek time"},
+  {id:84, label:"Set seek duration"},
   {id:85, label:"Switch subtitle and audio tracks"},
   {id:86, label:"Timeline hover previews"},
   {id:87, label:"Add chapters in video timeline"},
   {id:88, label:"Chromecast videos (Beta)"},
-  {id:89, label:"Keyboard shortcuts for player"},
+  {id:89, label:"Set keyboard shortcuts"},
   {id:90, label:"Add shoppable video"},
   {id:91, label:"Secure video playback (signed URLs)"},
-  {id:92, label:"Playback DRM content"},
-  {id:93, label:"Use custom domain in player"},
-  {id:94, label:"Preload video and crossorigin"},
+  {id:92, label:"Play DRM content"},
+  {id:93, label:"Use custom domain"},
+  {id:94, label:"Configure preload and CORS"},
   {id:95, label:"Enable lazy loading"},
   {id:96, label:"Listen to video events"},
-  {id:97, label:"FastPix player for iOS"},
-  {id:98, label:"FastPix player for Android"},
-  {id:99, label:"FastPix player for Flutter"},
+  {id:97, label:"Player for iOS"},
+  {id:98, label:"Player for Android"},
+  {id:99, label:"Player for Flutter"},
   {id:100, label:"Monitor FastPix player (Web)"},
   {id:101, label:"Monitor Shaka player (Web)"},
   {id:102, label:"Monitor HLS.js (Web)"},
@@ -393,21 +386,23 @@ const CARDS = [
   {id:106, label:"Monitor React Native"},
   {id:107, label:"Monitor Better Player (Flutter)"},
   {id:108, label:"Audience metrics"},
-  {id:109, label:"Quality of experience (QoE) metrics"},
+  {id:109, label:"QoE metrics"},
   {id:110, label:"Playback metrics"},
   {id:111, label:"Video startup metrics"},
   {id:112, label:"Stability metrics"},
   {id:113, label:"Render quality metrics"},
   {id:114, label:"Understand dashboard UI"},
-  {id:115, label:"Create workflows with API"},
+  {id:115, label:"Build workflows with API"},
   {id:116, label:"Use passable dimensions"},
   {id:117, label:"Use custom dimensions"},
   {id:118, label:"Troubleshoot playback errors"},
-  {id:119, label:"Import and organize content (Cloud Playout)"},
+  {id:119, label:"Import and organize content"},
   {id:120, label:"Configure playout elements"},
   {id:121, label:"Program a loop channel"},
   {id:122, label:"Program a scheduled channel"},
-  {id:123, label:"Monitor and manage channel"},
+  {id:123, label:"Monitor and manage channels"},
+  {id:124, label:"Play HLS streams"},
+  {id:125, label:"Set preview thumbnail"},
 ];
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -551,160 +546,9 @@ async function submitSort(){
   try{const x=JSON.parse(localStorage.getItem(SK)||'[]');x.push(payload);localStorage.setItem(SK,JSON.stringify(x))}catch(e){}
   if(WEBHOOK&&WEBHOOK!=="YOUR_GOOGLE_APPS_SCRIPT_URL_HERE"){try{await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})}catch(e){console.error(e)}}
   show('done');
-  generateSummaryImage();
 }
 
 window.addEventListener('hashchange',()=>{if(location.hash==='#admin'){show('admin');renderAdmin()}else if(!location.hash||location.hash==='#')show('intro')});
-
-// ════════════════════════════════════════════════════════
-// IMAGE GENERATION
-// ════════════════════════════════════════════════════════
-function generateSummaryImage(){
-  const canvas=document.getElementById('summary-canvas');
-  const ctx=canvas.getContext('2d');
-
-  // Layout constants
-  const W=1200;
-  const PAD=40;
-  const COL_W=W-PAD*2;
-  const HEADER_H=120;
-  const PARENT_TITLE_H=44;
-  const SUB_TITLE_H=28;
-  const CARD_H=22;
-  const CARD_GAP=4;
-  const SUB_PAD_TOP=8;
-  const SUB_PAD_BOT=12;
-  const PARENT_GAP=24;
-  const SUB_GAP=8;
-  const FOOTER_H=80;
-
-  // Pre-calculate total height
-  let totalH=HEADER_H;
-  STRUCTURE.forEach(parent=>{
-    totalH+=PARENT_TITLE_H;
-    parent.subs.forEach(sub=>{
-      const cards=buckets[sub.id];
-      totalH+=SUB_TITLE_H+SUB_PAD_TOP+SUB_PAD_BOT+Math.max(cards.length,0)*(CARD_H+CARD_GAP);
-      if(!cards.length)totalH+=CARD_H;
-      totalH+=SUB_GAP;
-    });
-    totalH+=PARENT_GAP;
-  });
-  if(unsorted.length){
-    totalH+=PARENT_TITLE_H+SUB_TITLE_H+SUB_PAD_TOP+SUB_PAD_BOT+unsorted.length*(CARD_H+CARD_GAP)+PARENT_GAP;
-  }
-  totalH+=FOOTER_H;
-
-  canvas.width=W;
-  canvas.height=totalH;
-
-  // Background
-  ctx.fillStyle='#09090b';
-  ctx.fillRect(0,0,W,totalH);
-
-  // Helper functions
-  function text(str,x,y,font,color,maxW){
-    ctx.fillStyle=color;ctx.font=font;
-    if(maxW)ctx.fillText(str,x,y,maxW);
-    else ctx.fillText(str,x,y);
-  }
-  function roundRect(x,y,w,h,r,fill,stroke){
-    ctx.beginPath();ctx.roundRect(x,y,w,h,r);
-    if(fill){ctx.fillStyle=fill;ctx.fill()}
-    if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}
-  }
-
-  let Y=0;
-
-  // ── Header ──
-  roundRect(0,0,W,HEADER_H,0,'#0f0f13');
-  // Logo
-  roundRect(PAD,28,32,32,6,'#E84E1B');
-  text('FP',PAD+8,50,'bold 13px DM Sans','#fff');
-  text('FastPix Docs — Card Sort Results',PAD+44,46,'bold 18px DM Sans','#fafafa');
-  text(email+' · '+new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}),PAD+44,68,'400 12px JetBrains Mono','#a1a1aa');
-
-  // Stats bar
-  const sorted=CARDS.length-unsorted.length;
-  const pct=Math.round(sorted/CARDS.length*100);
-  const notSure=buckets['unsure.bucket']?buckets['unsure.bucket'].length:0;
-  const statsText=`${sorted}/${CARDS.length} sorted (${pct}%) · Confidence: ${confidence||'—'}/5 · Not sure: ${notSure}`;
-  text(statsText,PAD,100,'500 11px JetBrains Mono','#52525b');
-
-  Y=HEADER_H;
-
-  // ── Categories ──
-  STRUCTURE.forEach(parent=>{
-    const parentCards=[];parent.subs.forEach(s=>parentCards.push(...buckets[s.id]));
-
-    // Parent header
-    roundRect(PAD,Y+4,COL_W,PARENT_TITLE_H-8,8,'#111113','#27272a');
-    text(`${parent.icon} ${parent.name}`,PAD+14,Y+28,'bold 15px DM Sans','#fafafa');
-    text(`${parentCards.length} cards`,W-PAD-80,Y+28,'400 11px JetBrains Mono','#52525b');
-    Y+=PARENT_TITLE_H;
-
-    parent.subs.forEach(sub=>{
-      const cards=buckets[sub.id];
-      const subH=SUB_TITLE_H+SUB_PAD_TOP+SUB_PAD_BOT+Math.max(cards.length,1)*(CARD_H+CARD_GAP);
-
-      // Sub background
-      const subBg=sub.isUnsure?'#1a1a0f':'#0f0f13';
-      const subBorder=sub.isUnsure?'#eab308':'#27272a';
-      roundRect(PAD+12,Y,COL_W-24,subH,6,subBg,subBorder);
-
-      // Sub title
-      const nameColor=sub.isUnsure?'#eab308':'#E84E1B';
-      text(sub.name,PAD+24,Y+20,'600 12px DM Sans',nameColor);
-      text(`${cards.length}`,W-PAD-50,Y+20,'400 10px JetBrains Mono','#52525b');
-      Y+=SUB_TITLE_H+SUB_PAD_TOP;
-
-      if(!cards.length){
-        text('(empty)',PAD+24,Y+14,'italic 11px JetBrains Mono','#3f3f46');
-        Y+=CARD_H+CARD_GAP;
-      } else {
-        cards.forEach(card=>{
-          roundRect(PAD+24,Y,COL_W-48,CARD_H-2,4,'#19191d','#27272a');
-          text(card.label,PAD+32,Y+15,'400 11px JetBrains Mono','#a1a1aa',COL_W-80);
-          Y+=CARD_H+CARD_GAP;
-        });
-      }
-      Y+=SUB_PAD_BOT+SUB_GAP;
-    });
-    Y+=PARENT_GAP;
-  });
-
-  // Unsorted cards (if any left)
-  if(unsorted.length){
-    roundRect(PAD,Y+4,COL_W,PARENT_TITLE_H-8,8,'#111113','#27272a');
-    text(`⚠️ Still Unsorted`,PAD+14,Y+28,'bold 15px DM Sans','#ef4444');
-    text(`${unsorted.length} cards`,W-PAD-80,Y+28,'400 11px JetBrains Mono','#52525b');
-    Y+=PARENT_TITLE_H+SUB_PAD_TOP;
-    unsorted.forEach(card=>{
-      roundRect(PAD+24,Y,COL_W-48,CARD_H-2,4,'#19191d','#3f3f46');
-      text(card.label,PAD+32,Y+15,'400 11px JetBrains Mono','#71717a',COL_W-80);
-      Y+=CARD_H+CARD_GAP;
-    });
-  }
-
-  // ── Footer ──
-  Y=totalH-FOOTER_H+20;
-  text('Generated by FastPix Docs IA Research · '+new Date().toISOString().slice(0,10),PAD,Y+20,'400 10px JetBrains Mono','#3f3f46');
-
-  // Show preview
-  const dataUrl=canvas.toDataURL('image/png');
-  const preview=document.getElementById('summary-preview');
-  preview.innerHTML=`<img src="${dataUrl}" style="width:100%;display:block" alt="Card sort summary"/>`;
-
-  // Wire download button
-  document.getElementById('btn-download').onclick=()=>{
-    const a=document.createElement('a');
-    a.href=dataUrl;
-    a.download=`fastpix-cardsort-${email.replace(/[^a-zA-Z0-9]/g,'_')}-${Date.now()}.png`;
-    a.click();
-    toast('Image downloaded','ok');
-  };
-}
-
 if(location.hash==='#admin'){show('admin');renderAdmin()}
 function renderAdmin(){
   const w=document.getElementById('admin-content');
