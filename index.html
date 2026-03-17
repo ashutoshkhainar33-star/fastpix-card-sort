@@ -412,6 +412,46 @@ const CARDS = [
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 let email="",unsorted=[],buckets={},dragId=null,dragFrom=null,confidence=null;
+let autoScrollRAF=null;
+
+// ── Auto-scroll during drag ──
+// When dragging near edges of scrollable panels, auto-scroll them
+function setupAutoScroll(){
+  const catsPanel=document.getElementById('cats-panel');
+  const unsortedList=document.getElementById('unsorted-list');
+  const EDGE=60; // px from edge to trigger scroll
+  const SPEED=8; // px per frame
+
+  function autoScroll(e){
+    // Check categories panel
+    if(catsPanel){
+      const r=catsPanel.getBoundingClientRect();
+      if(e.clientX>=r.left && e.clientX<=r.right){
+        if(e.clientY<r.top+EDGE && e.clientY>=r.top){catsPanel.scrollTop-=SPEED}
+        else if(e.clientY>r.bottom-EDGE && e.clientY<=r.bottom){catsPanel.scrollTop+=SPEED}
+      }
+    }
+    // Check unsorted list
+    if(unsortedList){
+      const r=unsortedList.getBoundingClientRect();
+      if(e.clientX>=r.left && e.clientX<=r.right){
+        if(e.clientY<r.top+EDGE && e.clientY>=r.top){unsortedList.scrollTop-=SPEED}
+        else if(e.clientY>r.bottom-EDGE && e.clientY<=r.bottom){unsortedList.scrollTop+=SPEED}
+      }
+    }
+  }
+
+  let lastDragEvent=null;
+  function scrollLoop(){
+    if(lastDragEvent && dragId!==null)autoScroll(lastDragEvent);
+    autoScrollRAF=requestAnimationFrame(scrollLoop);
+  }
+
+  document.addEventListener('dragover',e=>{lastDragEvent=e});
+  document.addEventListener('dragstart',()=>{if(autoScrollRAF)cancelAnimationFrame(autoScrollRAF);scrollLoop()});
+  document.addEventListener('dragend',()=>{if(autoScrollRAF){cancelAnimationFrame(autoScrollRAF);autoScrollRAF=null}lastDragEvent=null});
+  document.addEventListener('drop',()=>{if(autoScrollRAF){cancelAnimationFrame(autoScrollRAF);autoScrollRAF=null}lastDragEvent=null});
+}
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
@@ -425,7 +465,7 @@ function startSort(){
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){inp.classList.add('err');err.style.display='block';return}
   inp.classList.remove('err');err.style.display='none';email=v;
   unsorted=shuffle([...CARDS]);buckets={};ALL_SUBS.forEach(id=>buckets[id]=[]);
-  show('sort');renderAll();
+  show('sort');renderAll();setupAutoScroll();
 }
 
 function renderAll(){renderUnsorted();renderCats();updateProgress()}
